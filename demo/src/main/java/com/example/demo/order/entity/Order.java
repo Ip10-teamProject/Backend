@@ -1,5 +1,6 @@
 package com.example.demo.order.entity;
 
+import com.example.demo.global.TimeStamped;
 import com.example.demo.order.dto.OrderReqDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Table(name = "p_order")
-public class Order {
+public class Order extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
