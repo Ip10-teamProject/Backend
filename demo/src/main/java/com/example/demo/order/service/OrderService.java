@@ -3,6 +3,7 @@ package com.example.demo.order.service;
 import com.example.demo.order.dto.OrderReqDto;
 import com.example.demo.order.dto.OrderResDto;
 import com.example.demo.order.entity.Order;
+import com.example.demo.order.entity.OrderStatus;
 import com.example.demo.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     @Transactional
-    public OrderResDto create(OrderReqDto orderReqDto){
+    public OrderResDto create(OrderReqDto orderReqDto) {
         Order order = orderRepository.save(new Order(orderReqDto));
         return new OrderResDto(order);
     }
 
-    public List<OrderResDto> getAll(){
+    public List<OrderResDto> getAll() {
         List<Order> orderList = orderRepository.findAll();
         List<OrderResDto> orderResDtoList = new ArrayList<>();
 
-        for (Order order: orderList) {
+        for (Order order : orderList) {
             orderResDtoList.add((new OrderResDto(order)));
         }
 
@@ -53,7 +54,20 @@ public class OrderService {
         return "주문이 취소되었습니다.";
     }
 
-    private Order existOrder(UUID orderId){
+    @Transactional
+    public String delete(UUID orderId) {
+        Order order = existOrder(orderId);
+
+        if (order.getStatus() != OrderStatus.COMPLETED && order.getStatus() != OrderStatus.CANCELED){
+            throw new IllegalArgumentException("완료되지 않은 주문은 삭제할 수 없습니다.");
+        }
+
+        orderRepository.delete(order);
+
+        return "주문 삭제가 완료되었습니다.";
+    }
+
+    private Order existOrder(UUID orderId) {
         return orderRepository.findById(orderId).orElseThrow(
             () -> new IllegalArgumentException("글로벌 예외처리 추가해야함")
         );

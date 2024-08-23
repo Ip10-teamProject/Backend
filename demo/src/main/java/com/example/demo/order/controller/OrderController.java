@@ -35,4 +35,9 @@ public class OrderController {
     public String cancel(@PathVariable UUID orderId){
         return orderService.cancel(orderId);
     }
+
+    @DeleteMapping("/{orderId}")
+    public String delete(@PathVariable UUID orderId){
+        return orderService.delete(orderId);
+    }
 }
