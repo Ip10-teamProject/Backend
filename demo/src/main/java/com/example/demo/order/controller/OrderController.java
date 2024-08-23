@@ -4,6 +4,7 @@ import com.example.demo.order.dto.OrderReqDto;
 import com.example.demo.order.dto.OrderResDto;
 import com.example.demo.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,32 +18,42 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/admin") //관리자 관련 항목들은 나중에 따로 api를 생성하는게 좋을거에요. 일단은 이렇게 작성
-    public List<OrderResDto> list(){
+    public List<OrderResDto> list() {
         return orderService.getAll();
     }
 
     @GetMapping("/{orderId}")
-    public OrderResDto getOne(@PathVariable UUID orderId){
+    public OrderResDto getOne(@PathVariable UUID orderId) {
         return orderService.getOne(orderId);
     }
 
+    @GetMapping("/search")
+    public Page<OrderResDto> search(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "10") int size,
+        @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+        @RequestParam(value = "isAsc", defaultValue = "true") boolean isAsc
+    ) {
+        return orderService.search(page - 1, size, sortBy, isAsc);
+    }
+
     @PostMapping("/")
-    public OrderResDto create(@RequestBody OrderReqDto orderReqDto){
+    public OrderResDto create(@RequestBody OrderReqDto orderReqDto) {
         return orderService.create(orderReqDto);
     }
 
     @PutMapping("/{orderId}")
-    public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderReqDto orderReqDto){
+    public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderReqDto orderReqDto) {
         return orderService.update(orderId, orderReqDto);
     }
 
     @PutMapping("/{orderId}/cancel")
-    public String cancel(@PathVariable UUID orderId){
+    public String cancel(@PathVariable UUID orderId) {
         return orderService.cancel(orderId);
     }
 
     @DeleteMapping("/{orderId}")
-    public String delete(@PathVariable UUID orderId){
+    public String delete(@PathVariable UUID orderId) {
         return orderService.delete(orderId);
     }
 }

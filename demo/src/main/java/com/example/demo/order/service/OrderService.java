@@ -6,12 +6,14 @@ import com.example.demo.order.entity.Order;
 import com.example.demo.order.entity.OrderStatus;
 import com.example.demo.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +67,17 @@ public class OrderService {
         orderRepository.delete(order);
 
         return "주문 삭제가 완료되었습니다.";
+    }
+
+    @Transactional
+    public Page<OrderResDto> search(int page, int size, String sortBy, boolean isAsc) { //가게로 검색하도록 설정하면 될듯
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Order> ordersPage = orderRepository.findAll(pageable);
+
+        return ordersPage.map(OrderResDto::new);
     }
 
     public OrderResDto getOne(UUID orderId) {
