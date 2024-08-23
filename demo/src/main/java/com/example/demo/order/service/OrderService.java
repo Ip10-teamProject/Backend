@@ -59,7 +59,7 @@ public class OrderService {
         Order order = existOrder(orderId);
 
         if (order.getStatus() != OrderStatus.COMPLETED && order.getStatus() != OrderStatus.CANCELED) {
-            throw new IllegalArgumentException("완료되지 않은 주문은 삭제할 수 없습니다.");
+            throw new IllegalArgumentException("완료,취소되지 않은 주문은 삭제할 수 없습니다.");
         }
 
         orderRepository.delete(order);
