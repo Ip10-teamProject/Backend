@@ -32,9 +32,9 @@ public class Order {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.PENDING;
 
-    public Order(OrderReqDto orderReqDto){
+    public Order(OrderReqDto orderReqDto) {
         this.userId = orderReqDto.getUserId();
         this.paymentId = orderReqDto.getPaymentId();
         this.storeId = orderReqDto.getStoreId();
@@ -47,14 +47,14 @@ public class Order {
         this.memo = orderReqDto.getMemo();
     }
 
-    public void cancel(){
+    public void cancel() {
         checkStatusPending();
 
         this.status = OrderStatus.CANCELED;
     }
 
     private void checkStatusPending() {
-        if(this.status!=OrderStatus.PENDING){
+        if (this.status != OrderStatus.PENDING) {
             throw new IllegalArgumentException("진행중인 주문은 변경, 취소 할 수 없습니다.");
         }
     }
