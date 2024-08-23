@@ -67,6 +67,10 @@ public class OrderService {
         return "주문 삭제가 완료되었습니다.";
     }
 
+    public OrderResDto getOne(UUID orderId) {
+        return new OrderResDto(existOrder(orderId));
+    }
+
     private Order existOrder(UUID orderId) {
         return orderRepository.findById(orderId).orElseThrow(
             () -> new IllegalArgumentException("글로벌 예외처리 추가해야함")

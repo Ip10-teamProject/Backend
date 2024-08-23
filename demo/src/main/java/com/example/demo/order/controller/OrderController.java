@@ -21,6 +21,11 @@ public class OrderController {
         return orderService.getAll();
     }
 
+    @GetMapping("/{orderId}")
+    public OrderResDto getOne(@PathVariable UUID orderId){
+        return orderService.getOne(orderId);
+    }
+
     @PostMapping("/")
     public OrderResDto create(@RequestBody OrderReqDto orderReqDto){
         return orderService.create(orderReqDto);
