@@ -42,14 +42,20 @@ public class Order {
     }
 
     public void update(OrderReqDto orderReqDto) {
+        checkStatusPending();
+
         this.memo = orderReqDto.getMemo();
     }
 
     public void cancel(){
-        if(this.status!=OrderStatus.PENDING){
-            throw new IllegalArgumentException("진행중인 주문은 취소할 수 없습니다.");
-        }
+        checkStatusPending();
 
         this.status = OrderStatus.CANCELED;
+    }
+
+    private void checkStatusPending() {
+        if(this.status!=OrderStatus.PENDING){
+            throw new IllegalArgumentException("진행중인 주문은 변경, 취소 할 수 없습니다.");
+        }
     }
 }
