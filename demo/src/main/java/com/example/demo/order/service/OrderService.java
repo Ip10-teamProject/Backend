@@ -35,13 +35,27 @@ public class OrderService {
         return orderResDtoList;
     }
 
+    @Transactional
     public OrderResDto update(UUID orderId, OrderReqDto orderReqDto) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-            () -> new IllegalArgumentException("글로벌 예외처리 추가해야함")
-        );
+        Order order = existOrder(orderId);
 
         order.update(orderReqDto);
 
         return new OrderResDto(order);
+    }
+
+    @Transactional
+    public String cancel(UUID orderId) {
+        Order order = existOrder(orderId);
+
+        order.cancel();
+
+        return "주문이 취소되었습니다.";
+    }
+
+    private Order existOrder(UUID orderId){
+        return orderRepository.findById(orderId).orElseThrow(
+            () -> new IllegalArgumentException("글로벌 예외처리 추가해야함")
+        );
     }
 }

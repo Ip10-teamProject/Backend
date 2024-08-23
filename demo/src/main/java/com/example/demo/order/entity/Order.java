@@ -30,6 +30,10 @@ public class Order {
     @Column
     private String memo;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
     public Order(OrderReqDto orderReqDto){
         this.userId = orderReqDto.getUserId();
         this.paymentId = orderReqDto.getPaymentId();
@@ -39,5 +43,13 @@ public class Order {
 
     public void update(OrderReqDto orderReqDto) {
         this.memo = orderReqDto.getMemo();
+    }
+
+    public void cancel(){
+        if(this.status!=OrderStatus.PENDING){
+            throw new IllegalArgumentException("진행중인 주문은 취소할 수 없습니다.");
+        }
+
+        this.status = OrderStatus.CANCELED;
     }
 }

@@ -30,4 +30,9 @@ public class OrderController {
     public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderReqDto orderReqDto){
         return orderService.update(orderId, orderReqDto);
     }
+
+    @PutMapping("/{orderId}/cancel")
+    public String cancel(@PathVariable UUID orderId){
+        return orderService.cancel(orderId);
+    }
 }
