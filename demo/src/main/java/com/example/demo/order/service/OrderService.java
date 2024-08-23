@@ -1,7 +1,7 @@
 package com.example.demo.order.service;
 
-import com.example.demo.order.dto.ReqDto;
-import com.example.demo.order.dto.ResDto;
+import com.example.demo.order.dto.OrderReqDto;
+import com.example.demo.order.dto.OrderResDto;
 import com.example.demo.order.entity.Order;
 import com.example.demo.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,19 +19,29 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     @Transactional
-    public ResDto create(ReqDto reqDto){
-        Order order = orderRepository.save(new Order(reqDto));
-        return new ResDto(order);
+    public OrderResDto create(OrderReqDto orderReqDto){
+        Order order = orderRepository.save(new Order(orderReqDto));
+        return new OrderResDto(order);
     }
 
-    public List<ResDto> getAll(){
+    public List<OrderResDto> getAll(){
         List<Order> orderList = orderRepository.findAll();
-        List<ResDto> resDtoList = new ArrayList<>();
+        List<OrderResDto> orderResDtoList = new ArrayList<>();
 
         for (Order order: orderList) {
-            resDtoList.add((new ResDto(order)));
+            orderResDtoList.add((new OrderResDto(order)));
         }
 
-        return resDtoList;
+        return orderResDtoList;
+    }
+
+    public OrderResDto update(UUID orderId, OrderReqDto orderReqDto) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+            () -> new IllegalArgumentException("글로벌 예외처리 추가해야함")
+        );
+
+        order.update(orderReqDto);
+
+        return new OrderResDto(order);
     }
 }

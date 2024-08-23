@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReqDto {
+public class OrderReqDto {
     private Long userId;
     private UUID paymentId;
     private UUID storeId;

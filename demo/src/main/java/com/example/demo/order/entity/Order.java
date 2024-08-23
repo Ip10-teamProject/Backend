@@ -1,6 +1,6 @@
 package com.example.demo.order.entity;
 
-import com.example.demo.order.dto.ReqDto;
+import com.example.demo.order.dto.OrderReqDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,10 +30,14 @@ public class Order {
     @Column
     private String memo;
 
-    public Order(ReqDto reqDto){
-        this.userId = reqDto.getUserId();
-        this.paymentId = reqDto.getPaymentId();
-        this.storeId = reqDto.getStoreId();
-        this.memo = reqDto.getMemo();
+    public Order(OrderReqDto orderReqDto){
+        this.userId = orderReqDto.getUserId();
+        this.paymentId = orderReqDto.getPaymentId();
+        this.storeId = orderReqDto.getStoreId();
+        this.memo = orderReqDto.getMemo();
+    }
+
+    public void update(OrderReqDto orderReqDto) {
+        this.memo = orderReqDto.getMemo();
     }
 }
