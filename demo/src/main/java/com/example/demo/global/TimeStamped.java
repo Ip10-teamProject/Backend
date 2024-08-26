@@ -42,14 +42,14 @@ public abstract class TimeStamped {
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by", nullable = true, updatable = true)
-    private Long deletedBy;
+    private String deletedBy;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     public void markDeleted(User user) {
         this.deletedAt = LocalDateTime.now();
-        this.deletedBy = user.getId();
+        this.deletedBy = user.getUsername();
         this.isDeleted = true;
     }
 }
