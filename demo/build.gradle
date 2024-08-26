@@ -25,9 +25,10 @@ repositories {
 
 dependencies {
 	// JWT
-	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+	implementation 'io.jsonwebtoken:jjwt:0.12.6'
+	compileOnly 'io.jsonwebtoken:jjwt-api'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson'
 
 	// json
 	implementation 'org.json:json:20231013'

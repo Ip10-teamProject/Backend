@@ -1,9 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.jwt.JwtUtil;
-import com.example.demo.security.JwtAuthenticationFilter;
-import com.example.demo.security.JwtAuthorizationFilter;
-import com.example.demo.security.UserDetailsServiceImpl;
+import com.example.demo.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -23,9 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-  private final JwtUtil jwtUtil;
-  private final UserDetailsServiceImpl userDetailsService;
-  private final AuthenticationConfiguration authenticationConfiguration;
+  private final JwtRequestFilter jwtRequestFilter;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -37,18 +32,6 @@ public class WebSecurityConfig {
           AuthenticationConfiguration configuration
   ) throws Exception {
     return configuration.getAuthenticationManager();
-  }
-
-  @Bean
-  public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-    JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
-    filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-    return filter;
-  }
-
-  @Bean
-  public JwtAuthorizationFilter jwtAuthorizationFilter() {
-    return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
   }
 
   @Bean
@@ -81,8 +64,7 @@ public class WebSecurityConfig {
     );
 
     // 필터 관리 순서
-    http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
-    http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
