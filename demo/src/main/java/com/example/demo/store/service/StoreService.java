@@ -8,6 +8,7 @@ import com.example.demo.store.entity.Store;
 import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
 import com.example.demo.store.repository.StoreRepository;
+import com.example.demo.users.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class StoreService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final StoreMappingRepository storeMappingRepository;
-    public void addStore(StoreCreateRequestDto storeCreateRequestDto) {
+    public void addStore(StoreCreateRequestDto storeCreateRequestDto, User user) {
         Store store=Store.createStore(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getDescription(),
                 locationRepository.findById(storeCreateRequestDto.getLocation_id()).get());

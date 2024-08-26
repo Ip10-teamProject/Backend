@@ -1,6 +1,7 @@
 package com.example.demo.store.entity;
 
 import com.example.demo.location.entity.Location;
+import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.UUID;
@@ -26,9 +27,9 @@ public class Store {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "store")
     private List<StoreMapping> storeMappings = new ArrayList<>();

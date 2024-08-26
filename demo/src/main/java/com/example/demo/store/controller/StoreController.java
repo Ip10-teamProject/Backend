@@ -1,9 +1,12 @@
 package com.example.demo.store.controller;
 
+import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.store.dto.StoreCreateRequestDto;
 import com.example.demo.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class StoreController {
     private final StoreService storeService;
     @PostMapping("")
-    public ResponseEntity<String> addCategory(@RequestBody StoreCreateRequestDto storeCreateRequestDto) {
-        storeService.addStore(storeCreateRequestDto);
+    public ResponseEntity<String> addStore(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
+        storeService.addStore(storeCreateRequestDto ,userDetails.getUser());
         return ResponseEntity.ok()
                 .body("asd");
     }
