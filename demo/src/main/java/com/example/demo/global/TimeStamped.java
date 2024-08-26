@@ -1,7 +1,9 @@
 package com.example.demo.global;
 
+import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -11,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class TimeStamped {
@@ -28,10 +31,25 @@ public abstract class TimeStamped {
     @CreatedBy
     @Column(updatable = false, nullable = true) //임시로 true처리
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createBy;
+    private String createdBy;
 
     @LastModifiedBy
-    @Column
+    @Column(updatable = true)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedBy;
+    private String updatedBy;
+
+    @Column(name = "deleted_at", nullable = true, updatable = true)
+    private LocalDateTime deletedAt;
+
+    @Column(name = "deleted_by", nullable = true, updatable = true)
+    private Long deletedBy;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
+    public void markDeleted(User user) {
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = user.getId();
+        this.isDeleted = true;
+    }
 }
