@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,8 @@ public class CategoryService {
     public void addCategory(CategoryRequestDto categoryRequestDto) {
         List<Category> categories = new ArrayList<>();
         for (String categoryName :categoryRequestDto.getCategory()) {
-            if(!categoryRepository.findBycategoryName(categoryName)){
+            Optional<Category> bycategoryName = categoryRepository.findBycategoryName(categoryName);
+            if(!bycategoryName.isPresent()){
                 categories.add(Category.createCategory(categoryName));
             }
         }
@@ -30,12 +32,12 @@ public class CategoryService {
         return categoryRepository.getCategorys();
     }
 
-    public void deleteCategory(Long categoryId) {
+    public void deleteCategory(UUID categoryId) {
         Optional<Category>category =categoryRepository.findById(categoryId);
         category.ifPresent(categoryRepository::delete);
     }
 
-    public void updateCategory(Long categoryId, updateCategoryRequestDto updateCategoryRequestDto) {
+    public void updateCategory(UUID categoryId, updateCategoryRequestDto updateCategoryRequestDto) {
         Optional<Category>category =categoryRepository.findById(categoryId);
         if(category.isPresent()){
             Category updateCategory=category.get();

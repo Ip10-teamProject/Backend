@@ -3,7 +3,8 @@ package com.example.demo.store.entity;
 import com.example.demo.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.UUID;
+
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -13,8 +14,8 @@ import org.hibernate.validator.constraints.UUID;
 @Table(name = "p_storeMapping")
 public class StoreMapping {
     @Id
-    @UUID
-    private Long storeMapping_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID storeMapping_id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
@@ -28,5 +29,4 @@ public class StoreMapping {
                 .category(category)
                 .build();
     }
-
 }

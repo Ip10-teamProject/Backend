@@ -2,12 +2,16 @@ package com.example.demo.store.controller;
 
 import com.example.demo.security.UserDetailsImpl;
 import com.example.demo.store.dto.StoreCreateRequestDto;
+import com.example.demo.store.dto.StoreResponseDto;
+import com.example.demo.store.dto.StoreUpdateRequestDto;
 import com.example.demo.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/stores")
@@ -16,32 +20,31 @@ import org.springframework.web.bind.annotation.*;
 public class StoreController {
     private final StoreService storeService;
     @PostMapping("")
-    public ResponseEntity<String> addStore(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
-        storeService.addStore(storeCreateRequestDto ,userDetails.getUser());
+    public ResponseEntity<StoreResponseDto> addStore(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
+
         return ResponseEntity.ok()
-                .body("asd");
+                .body(storeService.addStore(storeCreateRequestDto ,userDetails.getUser()));
     }
     @GetMapping("")
-    public ResponseEntity<String> getStores() {
-        storeService.getStores();
+    public ResponseEntity<List<StoreResponseDto>> getStores() {
+
         return ResponseEntity.ok()
-                .body("asd");
-    }
-    @PutMapping("/{storeId}")
-    public ResponseEntity<String> updateStore(@PathVariable Long storeId) {
-        storeService.updateStore(storeId);
-        return ResponseEntity.ok()
-                .body("asd");
-    }
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<String> deleteStore(@PathVariable Long storeId) {
-        storeService.deleteStore(storeId);
-        return ResponseEntity.ok()
-                .body("asd");
+                .body(storeService.getStores());
     }
     @GetMapping("/{storeId}")
-    public ResponseEntity<String> addCategory(@PathVariable Long storeId) {
-        storeService.getStore(storeId);
+    public ResponseEntity<StoreResponseDto> getStore(@PathVariable UUID storeId) {
+        return ResponseEntity.ok()
+                .body(storeService.getStore(storeId));
+    }
+    @PutMapping("/{storeId}")
+    public ResponseEntity<StoreResponseDto> updateStore(@PathVariable UUID storeId, @RequestBody StoreUpdateRequestDto storeUpdateRequestDto) {
+        storeService.updateStore(storeId,storeUpdateRequestDto);
+        return ResponseEntity.ok()
+                .body(storeService.updateStore(storeId,storeUpdateRequestDto));
+    }
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<String> deleteStore(@PathVariable UUID storeId) {
+        storeService.deleteStore(storeId);
         return ResponseEntity.ok()
                 .body("asd");
     }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/location")
@@ -28,13 +29,13 @@ public class LocationController {
                 .body(locationService.getLocations());
     }
     @DeleteMapping("/{locationId}")
-    public ResponseEntity<String> deleteLocation(@PathVariable Long locationId) {
+    public ResponseEntity<String> deleteLocation(@PathVariable UUID locationId) {
         locationService.deleteLocation(locationId);
         return ResponseEntity.ok()
                 .body("삭제");
     }
     @PutMapping("/{locationId}")
-    public ResponseEntity<String> updateLocation(@PathVariable Long locationId,@RequestBody UpdateLocationRequestDto updateLocationRequestDto) {
+    public ResponseEntity<String> updateLocation(@PathVariable UUID locationId,@RequestBody UpdateLocationRequestDto updateLocationRequestDto) {
         locationService.updateLocation(locationId,updateLocationRequestDto.getLocation());
         return ResponseEntity.ok()
                 .body("수정");

@@ -3,10 +3,10 @@ package com.example.demo.location.entity;
 import com.example.demo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.UUID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -14,13 +14,14 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "p_location")
-
 public class Location {
     @Id
-    @UUID
-    private Long location_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID location_id;
+
     @Column(name = "address")
     private String address;
+    @Builder.Default
     @OneToMany(mappedBy = "location")
     private List<Store> stores = new ArrayList<>();
     public static Location createLocation(String locationName) {

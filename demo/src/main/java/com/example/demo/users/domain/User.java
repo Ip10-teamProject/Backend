@@ -1,9 +1,14 @@
 package com.example.demo.users.domain;
 
+import com.example.demo.store.entity.Store;
+import com.example.demo.store.entity.StoreMapping;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter

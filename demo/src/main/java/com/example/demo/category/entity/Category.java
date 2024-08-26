@@ -3,10 +3,10 @@ package com.example.demo.category.entity;
 import com.example.demo.store.entity.StoreMapping;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.UUID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -16,11 +16,13 @@ import java.util.List;
 @Table(name = "p_category")
 public class Category {
     @Id
-    @UUID
-    private Long category_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID category_id;
+
     @Column(name = "categoryname")
     private String categoryName;
 
+    @Builder.Default
     @OneToMany(mappedBy = "category")
     private List<StoreMapping> storeMappings = new ArrayList<>();
     public static Category createCategory(String categoryName) {

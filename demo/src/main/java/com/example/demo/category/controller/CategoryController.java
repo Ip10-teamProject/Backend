@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/category")
@@ -28,13 +29,13 @@ public class CategoryController {
                 .body(categoryService.getCategorys());
     }
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<String> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok()
                 .body("asd");
     }
     @PutMapping("/{categoryId}")
-    public ResponseEntity<String> updateCategory(@PathVariable Long categoryId,@RequestBody updateCategoryRequestDto updateCategoryRequestDto) {
+    public ResponseEntity<String> updateCategory(@PathVariable UUID categoryId,@RequestBody updateCategoryRequestDto updateCategoryRequestDto) {
         categoryService.updateCategory(categoryId,updateCategoryRequestDto);
         return ResponseEntity.ok()
                 .body("asd");
