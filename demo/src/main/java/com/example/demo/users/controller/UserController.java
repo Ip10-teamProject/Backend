@@ -1,7 +1,7 @@
 package com.example.demo.users.controller;
 
-import com.example.demo.users.application.UserInfoDto;
 import com.example.demo.users.application.UserService;
+import com.example.demo.users.application.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
