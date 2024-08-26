@@ -1,9 +1,10 @@
 package com.example.demo.users.domain;
 
+import com.example.demo.global.TimeStamped;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Table(name = "p_user")
-public class User {
+public class User extends TimeStamped implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,6 @@ public class User {
   private String email;
   @Column(nullable = false, unique = true)
   private String nickname;
-
 
   @Enumerated(value = EnumType.STRING)
   private UserRoleEnum role;
