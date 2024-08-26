@@ -1,5 +1,7 @@
 package com.example.demo.users.application;
 
+import com.example.demo.users.application.dto.LoginRequestDto;
+import com.example.demo.users.application.dto.SignupRequestDto;
 import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import com.example.demo.users.domain.UserRoleEnum;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Base64;
@@ -48,6 +51,7 @@ public class AuthService {
 
 
   // 회원 가입
+  @Transactional(readOnly = false)
   public void signup(SignupRequestDto requestDto) {
     String username = requestDto.getUsername();
     String password = passwordEncoder.encode(requestDto.getPassword());
@@ -84,6 +88,8 @@ public class AuthService {
 
     // 사용자 등록
     User user = new User(username, password, email, nickname, role);
+    user.setCreatedBy(username);
+    user.setUpdatedBy(username);
     userRepository.save(user);
   }
 
@@ -113,7 +119,9 @@ public class AuthService {
 
     return BEARER_PREFIX +
             Jwts.builder()
-                    .setSubject(checkUser.getUsername()) // 사용자 식별자값(ID)
+                    .claim("user_id", checkUser.getId())
+                    .claim("username", checkUser.getUsername())
+                    .setSubject(checkUser.getEmail()) // 사용자 식별자값(ID)
                     .claim(AUTHORIZATION_KEY, checkUser.getRole()) // 사용자 권한
                     .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                     .setIssuedAt(date) // 발급일
