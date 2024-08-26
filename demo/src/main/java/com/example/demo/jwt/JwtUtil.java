@@ -1,5 +1,6 @@
 package com.example.demo.jwt;
 
+import com.example.demo.users.domain.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -39,26 +40,6 @@ public class JwtUtil {
     key = Keys.hmacShaKeyFor(bytes);
   }
 
-  /* HTTP Headers 이용한 JWT 사용 흐름
-  1. 토큰 생성
-  - Client 가 username, password 로 로그인 성공 시,
-  - 서버에서 "로그인 정보"를 바탕으로 JWT 로 암호화 (Secret Key 사용)
-
-    (토큰 생성 이후 JWT 동작)
-    생성한 JWT 를 Client 응답 Header에 전달
-    Client 에서 JWT 저장 (쿠키)
-  -------------------------------------------------------------
-    (Client 에서 Server 로 JWT 를 통한 인증 방법)
-    Client 가 JWT 를 API 요청 시마다 Header 에 포함하여 Sever 로 전달
-
-  2. 토큰 검증
-  - Client 가 전달한 JWT 위조 여부 검증 (Secret Key 사용)
-  - JWT 유효기간이 지나지 않았는지 검증
-
-    (검증 성공시)
-  3. 토큰에서 사용자 정보 가져오기
-  - JWT 에서 사용자 정보를 가져와 확인
-   */
 
   // 토큰 생성
   public String createToken(String username, UserRoleEnum role) {
@@ -90,7 +71,8 @@ public class JwtUtil {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token); // 토큰 검증
       return true;
-    } catch (SecurityException | MalformedJwtException | SignatureException e) {
+      //  } catch (SecurityException | MalformedJwtException | SignatureException e) {
+    } catch (SecurityException | MalformedJwtException e) {
       log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
     } catch (ExpiredJwtException e) {
       log.error("Expired JWT token, 만료된 JWT token 입니다.");

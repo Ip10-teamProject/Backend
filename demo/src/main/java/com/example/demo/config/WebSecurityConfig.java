@@ -67,18 +67,17 @@ public class WebSecurityConfig {
                             PathRequest.toStaticResources().atCommonLocations()
                     )
                     .permitAll() // resources 접근 허용 설정
-                    .requestMatchers("/")
-                    .permitAll() // 메인 페이지 요청 허가
-                    .requestMatchers("/api/user/**")
-                    .permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                    .requestMatchers(
+                            "/auth/signup",
+                            "/auth/login"
+                    )
+                    .permitAll()
+                    .requestMatchers(
+                            "/users/{userId}"
+                    ).hasAnyRole("CUSTOMER", "OWNER", "MASTER")
+
                     .anyRequest()
                     .authenticated() // 그 외 모든 요청 인증처리
-    );
-
-    // default가 아닌 우리가 직접 만든 로그인 페이지 사용
-    http.formLogin((formLogin) ->
-            formLogin
-                    .loginPage("/api/user/login-page").permitAll()
     );
 
     // 필터 관리 순서
