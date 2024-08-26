@@ -1,7 +1,6 @@
-package com.example.demo.users.application;
+package com.example.demo.users.application.dto;
 
 import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRoleEnum;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
