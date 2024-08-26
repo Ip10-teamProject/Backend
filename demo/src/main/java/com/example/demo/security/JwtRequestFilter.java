@@ -139,5 +139,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 }

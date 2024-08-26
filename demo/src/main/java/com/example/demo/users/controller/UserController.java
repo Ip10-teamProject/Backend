@@ -1,9 +1,11 @@
 package com.example.demo.users.controller;
 
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.users.application.UserService;
 import com.example.demo.users.application.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -24,9 +26,11 @@ public class UserController {
   @GetMapping("/{userId}")
   public UserInfoDto getUser(
           @PathVariable("userId")
-          Long userId
+          Long userId,
+          @AuthenticationPrincipal // 회원 정보 받아오기
+          CustomUserDetails userDetails
   ){
-      return userService.getUser(userId);
+      return userService.getUser(userId, userDetails);
   }
 
   // 회원 정보 수정
@@ -35,9 +39,11 @@ public class UserController {
           @PathVariable("userId")
           Long userId,
           @RequestBody
-          UserInfoDto userInfoDto
+          UserInfoDto userInfoDto,
+          @AuthenticationPrincipal // 회원 정보 받아오기
+          CustomUserDetails userDetails
   ){
-    return userService.updateUser(userId, userInfoDto);
+    return userService.updateUser(userId, userInfoDto, userDetails);
   }
 
 
