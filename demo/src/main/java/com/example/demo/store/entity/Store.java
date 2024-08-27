@@ -5,6 +5,8 @@ import com.example.demo.location.entity.Location;
 import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +17,21 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
+@DynamicInsert
 @Table(name = "p_store")
 public class Store extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID store_id;
+    @Column(name = "store_id")
+    private UUID storeId;
     @Column(name = "storename")
     private String storeName;
     @Column(name = "description")
     private String description;
+
+    @ColumnDefault("false")
+    @Column(name  = "isdeleted")
+    private boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false)

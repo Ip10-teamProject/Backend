@@ -23,7 +23,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom{
                 .fetchResults();
         List<CategoryResponseDto> content = new ArrayList<>();
         for (Category category : results.getResults()) {
-            content.add(new CategoryResponseDto(category.getCategory_id(),category.getCategoryName()));
+            content.add(new CategoryResponseDto(category.getCategoryId(),category.getCategoryName()));
         }
         return content;
     }
