@@ -20,7 +20,7 @@ public class LocationRepositoryImpl implements LocationRepositoryCustom{
                 .fetchResults();
         List<LocationResponseDto> content = new ArrayList<>();
         for (Location location : results.getResults()) {
-            content.add(new LocationResponseDto(location.getLocation_id(),location.getAddress()));
+            content.add(new LocationResponseDto(location.getLocationId(),location.getAddress()));
         }
         return content;
     }

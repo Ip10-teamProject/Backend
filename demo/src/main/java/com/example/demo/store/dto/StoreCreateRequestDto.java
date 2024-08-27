@@ -9,8 +9,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class StoreCreateRequestDto {
-    UUID location_id;
-    List<UUID>category_id;
+    UUID locationId;
+    List<UUID>categoryId;
     String storeName;
     String description;
 }

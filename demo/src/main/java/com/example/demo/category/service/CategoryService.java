@@ -29,7 +29,7 @@ public class CategoryService {
         categoryRepository.saveAll(categories);
         List<CategoryResponseDto> categoryResponseDtos = new ArrayList<>();
         for (Category category : categories) {
-            categoryResponseDtos.add(new CategoryResponseDto(category.getCategory_id(),category.getCategoryName()));
+            categoryResponseDtos.add(new CategoryResponseDto(category.getCategoryId(),category.getCategoryName()));
         }
         return categoryResponseDtos;
     }
@@ -51,6 +51,6 @@ public class CategoryService {
         );
         category.updateCategory(updateCategoryRequestDto.getCategory());
         categoryRepository.save(category);
-        return new CategoryResponseDto(category.getCategory_id(),category.getCategoryName());
+        return new CategoryResponseDto(category.getCategoryId(),category.getCategoryName());
     }
 }

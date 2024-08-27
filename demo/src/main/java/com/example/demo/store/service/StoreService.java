@@ -35,16 +35,16 @@ public class StoreService {
         new NullPointerException(""));
         Store store=Store.createStore(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getDescription(),
-                locationRepository.findById(storeCreateRequestDto.getLocation_id()).get(),user);
+                locationRepository.findById(storeCreateRequestDto.getLocationId()).get(),user);
         storeRepository.save(store);
 
         List<StoreMapping> storeMappings = new ArrayList<>();
-        for (UUID categoryId : storeCreateRequestDto.getCategory_id()) {
+        for (UUID categoryId : storeCreateRequestDto.getCategoryId()) {
             Optional<Category> category = categoryRepository.findById(categoryId);
             category.ifPresent(value -> storeMappings.add(StoreMapping.createStoreMapping(store, value)));
         }
         storeMappingRepository.saveAll(storeMappings);
-        return storeRepository.getStore(store.getStore_id());
+        return storeRepository.getStore(store.getStoreId());
     }
 
     public StoreResponseDto getStore(UUID storeId) { // 카테고리랑 일단 조인해서 카테고리 다 들고오고 메뉴랑 조인해서 메뉴 들고와서 리턴
@@ -61,7 +61,7 @@ public class StoreService {
         );
         store.updateStore(storeUpdateRequestDto.getStoreName(),storeUpdateRequestDto.getDescription());
         storeRepository.save(store);
-        return storeRepository.getStore(store.getStore_id());
+        return storeRepository.getStore(store.getStoreId());
     }
 
     public void deleteStore(UUID storeId) {

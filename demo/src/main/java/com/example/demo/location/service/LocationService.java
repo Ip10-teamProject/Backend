@@ -27,7 +27,7 @@ public class LocationService {
         }
         List<LocationResponseDto> locationResponseDtos = new ArrayList<>();
         for (Location location : locations) {
-            locationResponseDtos.add(new LocationResponseDto(location.getLocation_id(),location.getAddress()));
+            locationResponseDtos.add(new LocationResponseDto(location.getLocationId(),location.getAddress()));
         }
         locationRepository.saveAll(locations);
         return locationResponseDtos;
@@ -41,6 +41,7 @@ public class LocationService {
         Location location =locationRepository.findById(locationId).orElseThrow(() ->
                 new NullPointerException("해당위치없음")
         );
+
         locationRepository.delete(location);
     }
 
@@ -51,6 +52,6 @@ public class LocationService {
         );
         location.updateLocation(locationName);
         locationRepository.save(location);
-        return new LocationResponseDto(location.getLocation_id(),location.getAddress());
+        return new LocationResponseDto(location.getLocationId(),location.getAddress());
     }
 }

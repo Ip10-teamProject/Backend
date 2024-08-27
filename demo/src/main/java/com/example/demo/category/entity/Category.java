@@ -4,6 +4,8 @@ import com.example.demo.global.TimeStamped;
 import com.example.demo.store.entity.StoreMapping;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +16,20 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
+@DynamicInsert
 @Table(name = "p_category")
 public class Category extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID category_id;
+    @Column(name = "category_id")
+    private UUID categoryId;
 
     @Column(name = "categoryname")
     private String categoryName;
+
+    @ColumnDefault("false")
+    @Column(name  = "isdeleted")
+    private boolean isDeleted;
 
     @Builder.Default
     @OneToMany(mappedBy = "category")

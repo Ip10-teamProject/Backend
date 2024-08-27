@@ -4,6 +4,8 @@ import com.example.demo.category.entity.Category;
 import com.example.demo.global.TimeStamped;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.UUID;
 
@@ -12,11 +14,18 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
+@DynamicInsert
 @Table(name = "p_storeMapping")
 public class StoreMapping extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID storeMapping_id;
+    @Column(name = "storeMappingId_id")
+    private UUID storeMappingId;
+
+    @ColumnDefault("false")
+    @Column(name  = "isdeleted")
+    private boolean isDeleted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
