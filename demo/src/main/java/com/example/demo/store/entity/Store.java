@@ -1,5 +1,6 @@
 package com.example.demo.store.entity;
 
+import com.example.demo.global.TimeStamped;
 import com.example.demo.location.entity.Location;
 import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "p_store")
-public class Store {
+public class Store extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID store_id;

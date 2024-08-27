@@ -1,5 +1,6 @@
 package com.example.demo.category.entity;
 
+import com.example.demo.global.TimeStamped;
 import com.example.demo.store.entity.StoreMapping;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "p_category")
-public class Category {
+public class Category extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID category_id;
