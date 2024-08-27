@@ -18,10 +18,10 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping("")
-    public ResponseEntity<String> addLocations(@RequestBody LocationRequestDto locationRequestDto) {
+    public ResponseEntity<List<LocationResponseDto>> addLocations(@RequestBody LocationRequestDto locationRequestDto) {
         locationService.addLocations(locationRequestDto);
         return ResponseEntity.ok()
-                .body("성공");
+                .body(locationService.addLocations(locationRequestDto));
     }
     @GetMapping("")
     public ResponseEntity<List<LocationResponseDto>> getLocations() {
@@ -35,9 +35,8 @@ public class LocationController {
                 .body("삭제");
     }
     @PutMapping("/{locationId}")
-    public ResponseEntity<String> updateLocation(@PathVariable UUID locationId,@RequestBody UpdateLocationRequestDto updateLocationRequestDto) {
-        locationService.updateLocation(locationId,updateLocationRequestDto.getLocation());
+    public ResponseEntity<LocationResponseDto> updateLocation(@PathVariable UUID locationId,@RequestBody UpdateLocationRequestDto updateLocationRequestDto) {
         return ResponseEntity.ok()
-                .body("수정");
+                .body(locationService.updateLocation(locationId,updateLocationRequestDto.getLocation()));
     }
 }

@@ -18,10 +18,9 @@ import java.util.UUID;
 public class CategoryController {
     private final CategoryService categoryService;
     @PostMapping("")
-    public ResponseEntity<String> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
-        categoryService.addCategory(categoryRequestDto);
+    public ResponseEntity<List<CategoryResponseDto>> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
         return ResponseEntity.ok()
-                .body("asd");
+                .body(categoryService.addCategory(categoryRequestDto));
     }
     @GetMapping("")
     public ResponseEntity<List<CategoryResponseDto>> getCategorys() {
@@ -35,9 +34,8 @@ public class CategoryController {
                 .body("asd");
     }
     @PutMapping("/{categoryId}")
-    public ResponseEntity<String> updateCategory(@PathVariable UUID categoryId,@RequestBody updateCategoryRequestDto updateCategoryRequestDto) {
-        categoryService.updateCategory(categoryId,updateCategoryRequestDto);
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId,@RequestBody updateCategoryRequestDto updateCategoryRequestDto) {
         return ResponseEntity.ok()
-                .body("asd");
+                .body(categoryService.updateCategory(categoryId,updateCategoryRequestDto));
     }
 }

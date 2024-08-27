@@ -6,6 +6,7 @@ import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LocationService {
     private final LocationRepository locationRepository;
-    public void addLocations(LocationRequestDto locationRequestDto) {
+    public List<LocationResponseDto> addLocations(LocationRequestDto locationRequestDto) {
         List<Location> locations = new ArrayList<>();
         for (String locationName :locationRequestDto.getLocation()) {
             Optional<Location> byaddress = locationRepository.findByaddress(locationName);
@@ -24,7 +25,12 @@ public class LocationService {
                 locations.add(Location.createLocation(locationName));
             }
         }
+        List<LocationResponseDto> locationResponseDtos = new ArrayList<>();
+        for (Location location : locations) {
+            locationResponseDtos.add(new LocationResponseDto(location.getLocation_id(),location.getAddress()));
+        }
         locationRepository.saveAll(locations);
+        return locationResponseDtos;
     }
 
     public List<LocationResponseDto> getLocations() {
@@ -36,14 +42,13 @@ public class LocationService {
         location.ifPresent(locationRepository::delete);
     }
 
-    public void updateLocation(UUID locationId, String locationName) {
-        Optional<Location>location =locationRepository.findById(locationId);
-        if(location.isPresent()){
-            Location updateLocation=location.get();
-            updateLocation.updateLocation(locationName);
-            locationRepository.save(updateLocation);
-        }else {
-            //
-        }
+    @Transactional
+    public LocationResponseDto updateLocation(UUID locationId, String locationName) {
+        Location location =locationRepository.findById(locationId).orElseThrow(() ->
+                new NullPointerException("해당위치없음")
+        );
+        location.updateLocation(locationName);
+        locationRepository.save(location);
+        return new LocationResponseDto(location.getLocation_id(),location.getAddress());
     }
 }

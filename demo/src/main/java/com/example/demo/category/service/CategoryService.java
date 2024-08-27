@@ -5,8 +5,11 @@ import com.example.demo.category.dto.CategoryResponseDto;
 import com.example.demo.category.dto.updateCategoryRequestDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.category.repository.CategoryRepository;
+import com.example.demo.location.dto.LocationResponseDto;
+import com.example.demo.location.entity.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    public void addCategory(CategoryRequestDto categoryRequestDto) {
+    public List<CategoryResponseDto> addCategory(CategoryRequestDto categoryRequestDto) {
         List<Category> categories = new ArrayList<>();
         for (String categoryName :categoryRequestDto.getCategory()) {
             Optional<Category> bycategoryName = categoryRepository.findBycategoryName(categoryName);
@@ -26,6 +29,11 @@ public class CategoryService {
             }
         }
         categoryRepository.saveAll(categories);
+        List<CategoryResponseDto> categoryResponseDtos = new ArrayList<>();
+        for (Category category : categories) {
+            categoryResponseDtos.add(new CategoryResponseDto(category.getCategory_id(),category.getCategoryName()));
+        }
+        return categoryResponseDtos;
     }
 
     public List<CategoryResponseDto>  getCategorys() {
@@ -36,15 +44,13 @@ public class CategoryService {
         Optional<Category>category =categoryRepository.findById(categoryId);
         category.ifPresent(categoryRepository::delete);
     }
-
-    public void updateCategory(UUID categoryId, updateCategoryRequestDto updateCategoryRequestDto) {
-        Optional<Category>category =categoryRepository.findById(categoryId);
-        if(category.isPresent()){
-            Category updateCategory=category.get();
-            updateCategory.updateCategory(updateCategory.getCategoryName());
-            categoryRepository.save(updateCategory);
-        }else {
-            //
-        }
+    @Transactional
+    public CategoryResponseDto updateCategory(UUID categoryId, updateCategoryRequestDto updateCategoryRequestDto) {
+        Category category =categoryRepository.findById(categoryId).orElseThrow(() ->
+                new NullPointerException("해당카테고리없음")
+        );
+        category.updateCategory(updateCategoryRequestDto.getCategory());
+        categoryRepository.save(category);
+        return new CategoryResponseDto(category.getCategory_id(),category.getCategoryName());
     }
 }
