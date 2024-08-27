@@ -1,14 +1,12 @@
 package com.example.demo.users.controller;
 
-import com.example.demo.users.application.LoginRequestDto;
-import com.example.demo.users.application.SignupRequestDto;
 import com.example.demo.users.application.AuthService;
+import com.example.demo.users.application.dto.LoginRequestDto;
+import com.example.demo.users.application.dto.SignupRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

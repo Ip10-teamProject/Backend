@@ -1,16 +1,15 @@
-package com.example.demo.users.application;
+package com.example.demo.users.application.dto;
 
 import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRoleEnum;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UserInfoDto {
   @Size(min = 4, max = 10)
   @Pattern(regexp = "^[a-zA-Z0-9_-]{4,10}$")
