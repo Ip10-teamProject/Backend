@@ -7,6 +7,7 @@ import com.example.demo.users.domain.UserRepository;
 import com.example.demo.users.domain.UserRoleEnum;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Key;
-import java.util.Base64;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
 
@@ -33,9 +33,9 @@ public class AuthService {
   // 로그인한 사용자의 권한이 담길 KEY 값
   public static final String AUTHORIZATION_KEY = "role";
   // 토큰 만료시간
-  private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+  private static Long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
-  private Key key;
+  private SecretKey key;
   // JWT의 서명 algo
   private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -45,7 +45,7 @@ public class AuthService {
   @PostConstruct
   // createToken 에서 사용할 key 초기화
   public void init() {
-    byte[] bytes = Base64.getDecoder().decode(secretKey);
+    byte[] bytes = Decoders.BASE64URL.decode(secretKey);
     key = Keys.hmacShaKeyFor(bytes);
   }
 
@@ -115,18 +115,17 @@ public class AuthService {
 
   // 토큰 생성
   public String createToken(User checkUser) {
-    Date date = new Date();
-
+    new Date();
+    new Date(System.currentTimeMillis());
     return BEARER_PREFIX +
             Jwts.builder()
                     .claim("user_id", checkUser.getId())
                     .claim("username", checkUser.getUsername())
-                    .setSubject(checkUser.getEmail()) // 사용자 식별자값(ID)
+                    .subject(checkUser.getEmail()) // 사용자 이메일
                     .claim(AUTHORIZATION_KEY, checkUser.getRole()) // 사용자 권한
-                    .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
-                    .setIssuedAt(date) // 발급일
+                    .expiration(new Date(System.currentTimeMillis() + TOKEN_TIME)) // 만료 시간
+                    .issuedAt(new Date(System.currentTimeMillis())) // 발급일
                     .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                     .compact();
   }
-
 }

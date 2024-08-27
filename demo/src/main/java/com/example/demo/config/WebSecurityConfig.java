@@ -44,25 +44,21 @@ public class WebSecurityConfig {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     );
 
-    http.authorizeHttpRequests((authorizeHttpRequests) ->
-            authorizeHttpRequests
+    http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                     .requestMatchers(
                             PathRequest.toStaticResources().atCommonLocations()
-                    )
-                    .permitAll() // resources 접근 허용 설정
+                    ).permitAll() // resources 접근 허용 설정
                     .requestMatchers(
                             "/auth/signup",
                             "/auth/login"
-                    )
-                    .permitAll()
+                    ).permitAll()
                     .requestMatchers(
                             "/users/{userId}"
                     ).hasAnyRole("CUSTOMER", "OWNER", "MASTER")
                     .requestMatchers(
-                            "/users"
-                    ).hasAnyRole("MASTER")
-                    .anyRequest()
-                    .authenticated() // 그 외 모든 요청 인증처리
+                            "/menus"
+                    ).hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+                    .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 
     // 필터 관리 순서
