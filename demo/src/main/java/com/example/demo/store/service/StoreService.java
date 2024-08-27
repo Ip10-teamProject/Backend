@@ -11,6 +11,7 @@ import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
 import com.example.demo.store.repository.StoreRepository;
 import com.example.demo.users.domain.User;
+import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +28,16 @@ public class StoreService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final StoreMappingRepository storeMappingRepository;
+    private final UserRepository userRepository;
     @Transactional
-    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, User user) {
+    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->
+        new NullPointerException(""));
         Store store=Store.createStore(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getDescription(),
                 locationRepository.findById(storeCreateRequestDto.getLocation_id()).get(),user);
         storeRepository.save(store);
+
         List<StoreMapping> storeMappings = new ArrayList<>();
         for (UUID categoryId : storeCreateRequestDto.getCategory_id()) {
             Optional<Category> category = categoryRepository.findById(categoryId);

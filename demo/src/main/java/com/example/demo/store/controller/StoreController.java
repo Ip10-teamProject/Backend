@@ -1,6 +1,6 @@
 package com.example.demo.store.controller;
 
-import com.example.demo.security.UserDetailsImpl;
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.store.dto.StoreCreateRequestDto;
 import com.example.demo.store.dto.StoreResponseDto;
 import com.example.demo.store.dto.StoreUpdateRequestDto;
@@ -20,10 +20,10 @@ import java.util.UUID;
 public class StoreController {
     private final StoreService storeService;
     @PostMapping("")
-    public ResponseEntity<StoreResponseDto> addStore(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
+    public ResponseEntity<StoreResponseDto> addStore(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
 
         return ResponseEntity.ok()
-                .body(storeService.addStore(storeCreateRequestDto ,userDetails.getUser()));
+                .body(storeService.addStore(storeCreateRequestDto ,userDetails.getId()));
     }
     @GetMapping("")
     public ResponseEntity<List<StoreResponseDto>> getStores() {
