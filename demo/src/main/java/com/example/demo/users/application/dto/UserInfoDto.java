@@ -17,6 +17,7 @@ public class UserInfoDto {
   private String email;
   private String nickname;
   private String role;
+  private boolean isPublic;
 
   public static UserInfoDto fromEntity(User user){
     return UserInfoDto.builder()
@@ -24,6 +25,7 @@ public class UserInfoDto {
             .email(user.getEmail())
             .nickname(user.getNickname())
             .role(String.valueOf(user.getRole()))
+            .isPublic(user.isPublic())
             .build();
   }
 

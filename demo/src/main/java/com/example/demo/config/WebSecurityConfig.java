@@ -58,7 +58,9 @@ public class WebSecurityConfig {
                     .requestMatchers(
                             "/users/{userId}"
                     ).hasAnyRole("CUSTOMER", "OWNER", "MASTER")
-
+                    .requestMatchers(
+                            "/users"
+                    ).hasAnyRole("MASTER")
                     .anyRequest()
                     .authenticated() // 그 외 모든 요청 인증처리
     );

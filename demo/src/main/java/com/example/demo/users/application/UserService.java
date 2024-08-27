@@ -5,6 +5,10 @@ import com.example.demo.users.application.dto.UserInfoDto;
 import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,4 +57,21 @@ public class UserService {
     }
   }
 
+  // 활성, 비활성 포함 모든 회원 목록 조회 (관리자 기능)
+  public Page<UserInfoDto> userList(int page, int size, String sortBy, Boolean isPublic) {
+    // 최근 날짜 순으로 내림차순 정렬
+    Sort sort = Sort.by(sortBy).descending();
+    // 페이징 정보 설정
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<User> usersPage;
+    // isPublic이 null일 경우 모든 회원 목록 조회
+    if (isPublic == null){
+      usersPage = userRepository.findAll(pageable);
+    } else{
+      // isPublic의 값에 해당하는 모든 회원 목록 조회
+      usersPage = userRepository.findAllByIsPublic(pageable, isPublic);
+    }
+    return usersPage.map(UserInfoDto::fromEntity);
+  }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 public enum UserRoleEnum implements Serializable {
   CUSTOMER(Authority.CUSTOMER),  // 사용자 권한
   MASTER(Authority.MASTER),  // 관리자 권한
-  Owner(Authority.OWNER); // 가게 주인 권한
+  OWNER(Authority.OWNER); // 가게 주인 권한
 
   private final String authority;
 

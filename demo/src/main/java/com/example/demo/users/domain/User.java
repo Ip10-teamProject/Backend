@@ -33,6 +33,9 @@ public class User extends TimeStamped implements Serializable {
   @Enumerated(value = EnumType.STRING)
   private UserRoleEnum role;
 
+  @Column
+  private boolean isPublic = true;
+
   public User(String username, String password, String email, String nickname,UserRoleEnum role) {
     this.username = username;
     this.password = password;
