@@ -5,8 +5,6 @@ import com.example.demo.category.dto.CategoryResponseDto;
 import com.example.demo.category.dto.updateCategoryRequestDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.category.repository.CategoryRepository;
-import com.example.demo.location.dto.LocationResponseDto;
-import com.example.demo.location.entity.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +39,10 @@ public class CategoryService {
     }
 
     public void deleteCategory(UUID categoryId) {
-        Optional<Category>category =categoryRepository.findById(categoryId);
-        category.ifPresent(categoryRepository::delete);
+        Category category =categoryRepository.findById(categoryId).orElseThrow(() ->
+                new NullPointerException("해당카테고리없음")
+        );
+        categoryRepository.delete(category);
     }
     @Transactional
     public CategoryResponseDto updateCategory(UUID categoryId, updateCategoryRequestDto updateCategoryRequestDto) {

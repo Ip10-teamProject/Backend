@@ -46,6 +46,6 @@ public class StoreController {
     public ResponseEntity<String> deleteStore(@PathVariable UUID storeId) {
         storeService.deleteStore(storeId);
         return ResponseEntity.ok()
-                .body("asd");
+                .body(storeId+"가게"+" "+"삭제완료");
     }
 }

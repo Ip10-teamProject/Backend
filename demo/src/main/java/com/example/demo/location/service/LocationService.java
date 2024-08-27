@@ -38,8 +38,10 @@ public class LocationService {
     }
 
     public void deleteLocation(UUID locationId) {
-        Optional<Location> location =locationRepository.findById(locationId);
-        location.ifPresent(locationRepository::delete);
+        Location location =locationRepository.findById(locationId).orElseThrow(() ->
+                new NullPointerException("해당위치없음")
+        );
+        locationRepository.delete(location);
     }
 
     @Transactional

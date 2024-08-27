@@ -32,7 +32,7 @@ public class LocationController {
     public ResponseEntity<String> deleteLocation(@PathVariable UUID locationId) {
         locationService.deleteLocation(locationId);
         return ResponseEntity.ok()
-                .body("삭제");
+                .body(locationId+"위치"+" "+"삭제완료");
     }
     @PutMapping("/{locationId}")
     public ResponseEntity<LocationResponseDto> updateLocation(@PathVariable UUID locationId,@RequestBody UpdateLocationRequestDto updateLocationRequestDto) {

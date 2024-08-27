@@ -31,7 +31,7 @@ public class CategoryController {
     public ResponseEntity<String> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok()
-                .body("asd");
+                .body(categoryId+"카테고리"+" "+"삭제완료");
     }
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId,@RequestBody updateCategoryRequestDto updateCategoryRequestDto) {
