@@ -25,8 +25,6 @@ public class UserService {
     User user = userRepository.findById(userId).orElseThrow(()->
             new IllegalArgumentException("존재하지 않는 사용자 입니다."));
 
-
-
     return UserInfoDto.fromEntity(user);
   }
 
@@ -74,4 +72,12 @@ public class UserService {
     }
     return usersPage.map(UserInfoDto::fromEntity);
   }
+
+  // 회원 단일 검색 (관리자 기능)
+  public UserInfoDto findByUsername(String username) {
+    User user = userRepository.findByUsername(username).orElseThrow(()->
+            new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    return  UserInfoDto.fromEntity(user);
+  }
+
 }

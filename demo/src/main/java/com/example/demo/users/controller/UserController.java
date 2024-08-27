@@ -3,8 +3,6 @@ package com.example.demo.users.controller;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.users.application.UserService;
 import com.example.demo.users.application.dto.UserInfoDto;
-import com.example.demo.users.domain.User;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,17 +24,24 @@ public class UserController {
           @RequestParam(value = "page", defaultValue = "1") int page,
           @RequestParam(value = "size", defaultValue = "3") int size,
           @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
-          // true -> 활동중인 사용자 목록 조회, false -> 비활동중인 사용자 목록 조회, null -> 둘 다 조회
           @RequestParam(value = "isPublic", required = false) Boolean isPublic
-  ){
-      return userService.userList(page - 1, size, sortBy, isPublic);
+  ) {
+    return userService.userList(page - 1, size, sortBy, isPublic);
   }
 
+  // 회원 단일 검색 (관리자 기능)
+  @PreAuthorize("hasRole('MASTER')")
+  @GetMapping("/search")
+  public UserInfoDto searchUser(
+          @RequestParam(value = "username") String username
+  ){
+    return userService.findByUsername(username);
+  }
 
   // 로그 아웃
   @PostMapping("/logout")
   public void logout(
-  ){
+  ) {
     // 일단 보류. 사용자의 토큰을 Redis에 저장해서 Redis에서 반환하기
   }
 
@@ -47,8 +52,8 @@ public class UserController {
           Long userId,
           @AuthenticationPrincipal // 회원 정보 받아오기
           CustomUserDetails userDetails
-  ){
-      return userService.getUser(userId, userDetails);
+  ) {
+    return userService.getUser(userId, userDetails);
   }
 
   // 회원 정보 수정
@@ -60,13 +65,8 @@ public class UserController {
           UserInfoDto userInfoDto,
           @AuthenticationPrincipal // 회원 정보 받아오기
           CustomUserDetails userDetails
-  ){
+  ) {
     return userService.updateUser(userId, userInfoDto, userDetails);
   }
-
-
-
-
-
 
 }

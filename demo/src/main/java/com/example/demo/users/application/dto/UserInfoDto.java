@@ -11,8 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class UserInfoDto {
-  @Size(min = 4, max = 10)
-  @Pattern(regexp = "^[a-zA-Z0-9_-]{4,10}$")
   private String username;
   private String email;
   private String nickname;
