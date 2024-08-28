@@ -21,10 +21,9 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping
-    public ResponseEntity<MenuCreateResponseDto> createMenu(@RequestBody MenuCreateRequestDto menuCreateRequestDto) {
+    public ResponseEntity<MenuCreateResponseDto> createMenu(@RequestBody MenuCreateRequestDto menuCreateRequestDto){
         MenuCreateResponseDto menuCreateResponseDto = menuService.createMenu(menuCreateRequestDto);
         return ResponseEntity.ok(menuCreateResponseDto);
     }
-
 
 }
