@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -157,7 +158,37 @@ public class StoreService {
                 .map(StoreMenusResponseDto::new);
     }
 
-//    @Transactional
-//    public void updateMenus(String storeName, StoreMenusUpdateRequestDto storeMenusUpdateRequestDto, Pageable pageable) {
-//    }
+    @Transactional
+    public void updateStoreMenus(String storeName, StoreMenusUpdateRequestDto storeMenusUpdateRequestDto, CustomUserDetails userDetails) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        storeMenusUpdateRequestDto.getMenuUpdateRequestDtoList().stream()
+                .filter(menuUpdateRequestDto -> {
+                    // 해당 이름의 메뉴가 DB에 존재하지 않으면 수정하지 않고 다음 단계로 건너뜁니다.
+                    UUID menuId = menuUpdateRequestDto.getMenuId();
+                    Optional<Menu> menuNameOptional = menuRepository.findById(menuId);
+                    return menuNameOptional.isPresent();
+                })
+                .forEach(menuUpdateRequestDto -> {
+                    // 해당 이름의 메뉴가 DB에 존재할 때만 수정합니다.
+                    UUID menuId = menuUpdateRequestDto.getMenuId();
+                    Menu menu = menuRepository.findById(menuId).get();
+                    if (menuUpdateRequestDto.getName() != null) {
+                        menu.setName(menuUpdateRequestDto.getName());
+                    }
+                    if (menuUpdateRequestDto.getPrice() != null) {
+                        menu.setPrice(menuUpdateRequestDto.getPrice());
+                    }
+                    if (menuUpdateRequestDto.getDescription() != null) {
+                        menu.setDescription(menuUpdateRequestDto.getDescription());
+                    }
+                    menu.setCreatedBy(userDetails.getUsername());
+                    menuRepository.save(menu);
+                });
+
+    }
+
 }

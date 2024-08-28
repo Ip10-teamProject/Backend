@@ -1,11 +1,10 @@
 package com.example.demo.store.controller;
 
-import com.example.demo.store.dto.*;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.store.dto.*;
 import com.example.demo.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -93,14 +92,14 @@ public class StoreController {
     }
 
 
-//
-//    @PatchMapping("/{storeName}/menus")
-//    public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
-//                                              @RequestBody StoreMenusUpdateRequestDto storeMenusUpdateRequestDto,
-//                                              Pageable pageable) {
-//        storeService.updateMenus(storeName, storeMenusUpdateRequestDto, pageable);
-//        return ResponseEntity.ok("");
-//    }
+
+    @PatchMapping("/{storeName}/menus")
+    public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                              @RequestBody StoreMenusUpdateRequestDto storeMenusUpdateRequestDto,
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        storeService.updateStoreMenus(storeName, storeMenusUpdateRequestDto, userDetails);
+        return ResponseEntity.ok("수정 완료");
+    }
 
 
 }
