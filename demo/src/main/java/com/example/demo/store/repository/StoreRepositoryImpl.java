@@ -165,6 +165,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(store.count())
                 .from(store)
+                .leftJoin(location).on(store.location.locationId.eq(location.locationId))
                 .where(store.isDeleted.eq(false));
         return new PageImpl<>(responseDtos, pageable,countQuery.fetchCount());
     }
