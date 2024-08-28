@@ -4,9 +4,10 @@ import com.example.demo.category.entity.Category;
 import com.example.demo.category.repository.CategoryRepository;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
-import com.example.demo.store.dto.StoreCreateRequestDto;
-import com.example.demo.store.dto.StoreResponseDto;
-import com.example.demo.store.dto.StoreUpdateRequestDto;
+import com.example.demo.menu.entity.Menu;
+import com.example.demo.menu.repository.MenuRepository;
+import com.example.demo.security.CustomUserDetails;
+import com.example.demo.store.dto.*;
 import com.example.demo.store.entity.Store;
 import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
@@ -19,10 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,7 @@ public class StoreService {
     private final CategoryRepository categoryRepository;
     private final StoreMappingRepository storeMappingRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
     @Transactional
     public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()->
@@ -107,4 +107,57 @@ public class StoreService {
     public Page<StoreResponseDto> getSearchStores(String name, Pageable pageable) {
         return storeRepository.SearchStores(name,pageable);
     }
+
+    @Transactional
+    public List<StoreMenusCreateResponseDto> createStoreMenus(String storeName,
+                                                              StoreMenusCreateRequestDto storeMenusCreateRequestDto,
+                                                              CustomUserDetails userDetails) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        Store store = storeOptional.get();
+
+        return storeMenusCreateRequestDto.getMenuCreateRequestDtoList().stream()
+                .filter(menuCreateRequestDto -> {
+                    // 해당 이름의 메뉴가 DB에 존재하면 저장하지 않고 다음 단계로 건너뜁니다.
+                    String requestMenuName = menuCreateRequestDto.getName();
+                    Optional<Menu> menuNameOptional = menuRepository.findByName(requestMenuName);
+                    return menuNameOptional.isEmpty();
+                })
+                .map(menuCreateRequestDto -> {
+                    // 해당 이름의 메뉴가 DB에 존재하지 않을 때만 저장합니다.
+                    Menu menu = Menu.builder()
+                            .name(menuCreateRequestDto.getName())
+                            .price(menuCreateRequestDto.getPrice())
+                            .description(menuCreateRequestDto.getDescription())
+                            .build();
+                    menu.setStore(store);
+                    menu.setCreatedBy(userDetails.getUsername());
+                    menu.setUpdatedBy(userDetails.getUsername());
+                    store.getMenus().add(menu);
+                    menuRepository.save(menu);
+                    storeRepository.save(store);
+                    return new StoreMenusCreateResponseDto(menu);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Page<StoreMenusResponseDto> getMenus(String storeName, Pageable pageable) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        UUID storeId = storeOptional.get().getStoreId();
+        Page<Menu> storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
+        return storeMenuPage
+                .map(StoreMenusResponseDto::new);
+    }
+
+//    @Transactional
+//    public void updateMenus(String storeName, StoreMenusUpdateRequestDto storeMenusUpdateRequestDto, Pageable pageable) {
+//    }
 }

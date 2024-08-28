@@ -1,9 +1,7 @@
 package com.example.demo.store.controller;
 
+import com.example.demo.store.dto.*;
 import com.example.demo.security.CustomUserDetails;
-import com.example.demo.store.dto.StoreCreateRequestDto;
-import com.example.demo.store.dto.StoreResponseDto;
-import com.example.demo.store.dto.StoreUpdateRequestDto;
 import com.example.demo.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +19,7 @@ import java.util.UUID;
 
 public class StoreController {
     private final StoreService storeService;
+
     @PostMapping("")
     public ResponseEntity<StoreResponseDto> addStore(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
 
@@ -65,4 +65,37 @@ public class StoreController {
         return ResponseEntity.ok()
                 .body(storeService.getSearchStores(name,pageable));
     }
+
+    /**
+     *  [ 가게 별 Menu 추가 API ]
+     */
+    @PostMapping("/{storeName}/menus")
+    public ResponseEntity<List<StoreMenusCreateResponseDto>> createStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                                              @RequestBody StoreMenusCreateRequestDto storeMenusCreateRequestDto,
+                                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok()
+                .body(storeService.createStoreMenus(storeName, storeMenusCreateRequestDto, userDetails));
+    }
+
+    /**
+     *  [ 가게 별 Menu 목록 조회 API ]
+     *  해당 API는 Store.storeName으로 요청하지만
+     *  실제 조회 로직에서는 Store.storeId로 조회합니다.
+     */
+    @GetMapping("/{storeName}/menus")
+    public ResponseEntity<Page<StoreMenusResponseDto>> getStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                                     Pageable pageable) {
+        return ResponseEntity.ok()
+                .body(storeService.getMenus(storeName, pageable));
+    }
+//
+//    @PatchMapping("/{storeName}/menus")
+//    public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
+//                                              @RequestBody StoreMenusUpdateRequestDto storeMenusUpdateRequestDto,
+//                                              Pageable pageable) {
+//        storeService.updateMenus(storeName, storeMenusUpdateRequestDto, pageable);
+//        return ResponseEntity.ok("");
+//    }
+
+
 }
