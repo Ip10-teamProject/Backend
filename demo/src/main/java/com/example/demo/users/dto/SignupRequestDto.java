@@ -1,6 +1,5 @@
-package com.example.demo.users.application.dto;
+package com.example.demo.users.dto;
 
-import com.example.demo.users.domain.UserRoleEnum;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +22,4 @@ public class SignupRequestDto {
   private String email;
   @NotBlank
   private String nickname;
-  @NotNull
-  private String role;
 }

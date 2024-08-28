@@ -1,8 +1,6 @@
-package com.example.demo.users.application.dto;
+package com.example.demo.users.dto;
 
 import com.example.demo.users.domain.User;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -17,7 +15,7 @@ public class UserInfoDto {
   private String role;
   private boolean isPublic;
 
-  public static UserInfoDto fromEntity(User user){
+  public static UserInfoDto fromEntity(User user) {
     return UserInfoDto.builder()
             .username(user.getUsername())
             .email(user.getEmail())

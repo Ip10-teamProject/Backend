@@ -35,14 +35,13 @@ public class User extends TimeStamped implements Serializable {
 
   @Column
   private boolean isPublic = true;
+  @Column // 권한 변경 신청시 -> true / 유저의 권한 신청을 관리자가 승인해주면 null, 거절하면 false
+  private boolean updateRole = false;
 
-  public User(String username, String password, String email, String nickname,UserRoleEnum role) {
+  public User(String username, String password, String email, String nickname) {
     this.username = username;
     this.password = password;
     this.email = email;
     this.nickname = nickname;
-    this.role = role;
   }
-
-
 }
