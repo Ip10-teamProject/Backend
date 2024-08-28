@@ -5,7 +5,10 @@ import com.example.demo.security.CustomUserDetails;
 import com.example.demo.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -84,10 +87,12 @@ public class StoreController {
      */
     @GetMapping("/{storeName}/menus")
     public ResponseEntity<Page<StoreMenusResponseDto>> getStoreMenus(@PathVariable(name = "storeName") String storeName,
-                                                                     Pageable pageable) {
+                                                                     @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok()
                 .body(storeService.getMenus(storeName, pageable));
     }
+
+
 //
 //    @PatchMapping("/{storeName}/menus")
 //    public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,

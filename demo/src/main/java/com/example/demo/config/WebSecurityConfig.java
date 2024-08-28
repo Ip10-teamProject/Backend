@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,23 +46,14 @@ public class WebSecurityConfig {
     );
 
     http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-                    .requestMatchers(
-                            PathRequest.toStaticResources().atCommonLocations()
-                    ).permitAll() // resources 접근 허용 설정
-                    .requestMatchers(
-                            "/auth/signup",
-                            "/auth/login"
-                    ).permitAll()
-                    .requestMatchers(
-                            "/users/{userId}"
-                    ).hasAnyRole("CUSTOMER", "OWNER", "MASTER")
-                    .requestMatchers(
-                            "/menus"
-                    ).hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
-            .requestMatchers(
-                    "/master/**"
-            ).hasAnyAuthority("ROLE_MASTER")
-                    .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+            .requestMatchers("/auth/signup", "/auth/login").permitAll()
+            .requestMatchers("/users/{userId}").hasAnyRole("CUSTOMER", "OWNER", "MASTER")
+            .requestMatchers("/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+            .requestMatchers(HttpMethod.GET, "/stores/{storeName}/menus").permitAll()
+            .requestMatchers("/stores/{storeName}/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+            .requestMatchers("/master/**").hasAnyAuthority("ROLE_MASTER")
+            .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 
     // 필터 관리 순서

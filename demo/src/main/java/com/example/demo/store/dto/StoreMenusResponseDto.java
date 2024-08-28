@@ -12,8 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreMenusResponseDto {
-    private UUID storeId;
-    private UUID menuId;
     private String name;
     private String description;
     private Integer price;
