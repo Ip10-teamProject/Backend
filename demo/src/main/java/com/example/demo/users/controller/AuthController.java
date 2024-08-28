@@ -1,9 +1,8 @@
 package com.example.demo.users.controller;
 
-import com.example.demo.users.application.AuthService;
-import com.example.demo.users.application.dto.LoginRequestDto;
-import com.example.demo.users.application.dto.SignupRequestDto;
-import jakarta.validation.Valid;
+import com.example.demo.users.dto.LoginRequestDto;
+import com.example.demo.users.service.AuthService;
+import com.example.demo.users.dto.SignupRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ public class AuthController {
   // 회원 가입
   @PostMapping("/signup")
   public ResponseEntity<?> signup(
-          @Valid
           @RequestBody
           SignupRequestDto requestDto
   ) {

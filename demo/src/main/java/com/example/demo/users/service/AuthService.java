@@ -1,10 +1,10 @@
-package com.example.demo.users.application;
+package com.example.demo.users.service;
 
-import com.example.demo.users.application.dto.LoginRequestDto;
-import com.example.demo.users.application.dto.SignupRequestDto;
 import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import com.example.demo.users.domain.UserRoleEnum;
+import com.example.demo.users.dto.LoginRequestDto;
+import com.example.demo.users.dto.SignupRequestDto;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -78,18 +78,11 @@ public class AuthService {
       throw new IllegalArgumentException("중복된 Nickname 입니다.");
     }
 
-    // 사용자 ROLE 확인
-    UserRoleEnum role;
-    try {
-      role = UserRoleEnum.valueOf(requestDto.getRole());
-    } catch (IllegalArgumentException ex) {
-      throw new IllegalArgumentException("등록할 수 없는 권한입니다.");
-    }
-
     // 사용자 등록
-    User user = new User(username, password, email, nickname, role);
+    User user = new User(username, password, email, nickname);
     user.setCreatedBy(username);
     user.setUpdatedBy(username);
+    user.setRole(UserRoleEnum.CUSTOMER);
     userRepository.save(user);
   }
 
