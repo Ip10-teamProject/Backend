@@ -17,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
-@DynamicInsert
 @Table(name = "p_store")
 public class Store extends TimeStamped {
     @Id
@@ -29,15 +28,11 @@ public class Store extends TimeStamped {
     @Column(name = "description")
     private String description;
 
-    @ColumnDefault("false")
-    @Column(name  = "isdeleted")
-    private boolean isDeleted;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Builder.Default
@@ -57,5 +52,11 @@ public class Store extends TimeStamped {
     public void updateStore(String storeName, String description ){
         this.storeName = storeName;
         this.description = description;
+    }
+    public void deleteStore(){
+        super.setDeleted(true);
+    }
+    public void deleteLocation(){
+        this.location = null;
     }
 }
