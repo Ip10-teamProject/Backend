@@ -30,10 +30,10 @@ public class Menu extends TimeStamped implements Serializable {
 
     @Column
     private Integer price;
-/*
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
-*/
+
     public Menu(MenuCreateRequestDto menuCreateRequestDto) {
         this.name = menuCreateRequestDto.getName();
         this.description = menuCreateRequestDto.getDescription();

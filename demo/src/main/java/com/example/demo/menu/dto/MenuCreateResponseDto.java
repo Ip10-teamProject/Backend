@@ -27,7 +27,7 @@ public class MenuCreateResponseDto {
                 .name(menu.getName())
                 .price(menu.getPrice())
                 .description(menu.getDescription())
-//                .storeId(menu.getStore().getStoreId())
+                .storeId(menu.getStore().getStoreId())
                 .createdAt(menu.getCreatedAt())
                 .build();
     }

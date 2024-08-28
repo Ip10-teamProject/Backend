@@ -17,19 +17,19 @@ import java.util.Optional;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-//    private final StoreRepository storeRepository;
+    private final StoreRepository storeRepository;
 
     public MenuCreateResponseDto createMenu(MenuCreateRequestDto menuCreateRequestDto) {
         Menu menu = new Menu(menuCreateRequestDto);
-//        Optional<Store> optionalStore = storeRepository.findById(menuCreateRequestDto.getStoreId());
-//
-//        if (optionalStore.isEmpty()) {
-//            throw new NoSuchElementException("Store id #" + menuCreateRequestDto.getStoreId() + " not found.");
-//        }
+        Optional<Store> optionalStore = storeRepository.findById(menuCreateRequestDto.getStoreId());
 
-//        menu.setStore(optionalStore.get());
-//        menu.setCreatedBy(menu.getStore().getUser().getUsername());
-//        menu.setUpdatedBy(menu.getStore().getUser().getUsername());
+        if (optionalStore.isEmpty()) {
+            throw new NoSuchElementException("Store id #" + menuCreateRequestDto.getStoreId() + " not found.");
+        }
+
+        menu.setStore(optionalStore.get());
+        menu.setCreatedBy(menu.getStore().getUser().getUsername());
+        menu.setUpdatedBy(menu.getStore().getUser().getUsername());
 
         Menu savedMenu = menuRepository.save(menu);
         return MenuCreateResponseDto.fromEntity(savedMenu);
