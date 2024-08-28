@@ -14,7 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
-@DynamicInsert
 @Table(name = "p_storeMapping")
 public class StoreMapping extends TimeStamped {
     @Id
@@ -22,15 +21,11 @@ public class StoreMapping extends TimeStamped {
     @Column(name = "storeMappingId_id")
     private UUID storeMappingId;
 
-    @ColumnDefault("false")
-    @Column(name  = "isdeleted")
-    private boolean isDeleted;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id")
     private Store store;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     public static StoreMapping createStoreMapping(Store store , Category category) {
@@ -38,5 +33,11 @@ public class StoreMapping extends TimeStamped {
                 .store(store)
                 .category(category)
                 .build();
+    }
+    public void storeClear(){
+        this.store = null;
+    }
+    public void categoryClear(){
+        this.category = null;
     }
 }

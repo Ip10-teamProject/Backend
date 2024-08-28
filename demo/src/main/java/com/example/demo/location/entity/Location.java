@@ -16,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
-@DynamicInsert
 @Table(name = "p_location")
 public class Location extends TimeStamped {
     @Id
@@ -27,9 +26,6 @@ public class Location extends TimeStamped {
     @Column(name = "address")
     private String address;
 
-    @ColumnDefault("false")
-    @Column(name  = "isdeleted")
-    private boolean isDeleted;
 
     @Builder.Default
     @OneToMany(mappedBy = "location")
@@ -42,5 +38,8 @@ public class Location extends TimeStamped {
 
     public void updateLocation(String locationName) {
         this.address =locationName;
+    }
+    public void deleteLocation(){
+        super.setDeleted(true);
     }
 }

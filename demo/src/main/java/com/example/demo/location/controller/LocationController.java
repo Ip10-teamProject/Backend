@@ -19,7 +19,6 @@ public class LocationController {
 
     @PostMapping("")
     public ResponseEntity<List<LocationResponseDto>> addLocations(@RequestBody LocationRequestDto locationRequestDto) {
-        locationService.addLocations(locationRequestDto);
         return ResponseEntity.ok()
                 .body(locationService.addLocations(locationRequestDto));
     }

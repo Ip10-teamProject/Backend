@@ -4,6 +4,8 @@ import com.example.demo.location.dto.LocationRequestDto;
 import com.example.demo.location.dto.LocationResponseDto;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
+import com.example.demo.store.entity.Store;
+import com.example.demo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LocationService {
     private final LocationRepository locationRepository;
+    private final StoreRepository storeRepository;
     public List<LocationResponseDto> addLocations(LocationRequestDto locationRequestDto) {
         List<Location> locations = new ArrayList<>();
         for (String locationName :locationRequestDto.getLocation()) {
@@ -25,11 +28,11 @@ public class LocationService {
                 locations.add(Location.createLocation(locationName));
             }
         }
+        locationRepository.saveAll(locations);
         List<LocationResponseDto> locationResponseDtos = new ArrayList<>();
         for (Location location : locations) {
             locationResponseDtos.add(new LocationResponseDto(location.getLocationId(),location.getAddress()));
         }
-        locationRepository.saveAll(locations);
         return locationResponseDtos;
     }
 
@@ -37,17 +40,27 @@ public class LocationService {
         return locationRepository.getLocations();
     }
 
+    @Transactional
     public void deleteLocation(UUID locationId) {
-        Location location =locationRepository.findById(locationId).orElseThrow(() ->
+        Location location =locationRepository.findById(locationId)
+                .filter(o -> !o.isDeleted())
+                .orElseThrow(() ->
                 new NullPointerException("해당위치없음")
         );
-
-        locationRepository.delete(location);
+        location.deleteLocation();
+        List<Store> stores = locationRepository.getReferenceStore(location.getLocationId());
+        for (Store store : stores) {
+            store.deleteLocation();
+        }
+        locationRepository.save(location);
+        storeRepository.saveAll(stores);
     }
 
     @Transactional
     public LocationResponseDto updateLocation(UUID locationId, String locationName) {
-        Location location =locationRepository.findById(locationId).orElseThrow(() ->
+        Location location =locationRepository.findById(locationId)
+                .filter(o -> !o.isDeleted())
+                .orElseThrow(() ->
                 new NullPointerException("해당위치없음")
         );
         location.updateLocation(locationName);
