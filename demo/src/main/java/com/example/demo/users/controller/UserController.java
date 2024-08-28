@@ -1,8 +1,9 @@
 package com.example.demo.users.controller;
 
-import com.example.demo.users.service.UserService;
 import com.example.demo.security.CustomUserDetails;
+
 import com.example.demo.users.dto.UserInfoDto;
+import com.example.demo.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

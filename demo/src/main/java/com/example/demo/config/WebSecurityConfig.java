@@ -58,6 +58,9 @@ public class WebSecurityConfig {
                     .requestMatchers(
                             "/menus"
                     ).hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+            .requestMatchers(
+                    "/master/**"
+            ).hasAnyAuthority("ROLE_MASTER")
                     .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 
