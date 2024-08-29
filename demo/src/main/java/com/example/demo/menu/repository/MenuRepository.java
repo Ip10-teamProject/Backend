@@ -1,12 +1,14 @@
 package com.example.demo.menu.repository;
 
 import com.example.demo.menu.entity.Menu;
+import com.example.demo.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,4 +25,6 @@ public interface MenuRepository extends JpaRepository<Menu, UUID> {
 
     @Query("SELECT m FROM  Menu m WHERE m.id = :menuId and m.store.storeId = :storeId")
     Optional<Menu> findByMenuIdAndStoreId(@Param("menuId") UUID menuId, @Param("storeId") UUID storeId);
+
+    List<Menu> findByIdInAndStore(List<UUID> ids, Store store);
 }
