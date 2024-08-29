@@ -2,7 +2,7 @@ package com.example.demo.store.service;
 
 import com.example.demo.category.entity.Category;
 import com.example.demo.category.repository.CategoryRepository;
-import com.example.demo.exception.StoreOwnerNonMatchedException;
+import com.example.demo.store.exception.StoreOwnerNonMatchedException;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
 import com.example.demo.menu.entity.Menu;
@@ -17,14 +17,15 @@ import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -122,6 +123,10 @@ public class StoreService {
 
         Store store = storeOptional.get();
 
+        if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+            throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 수정할 수 있습니다.");
+        }
+
         return storeMenusCreateRequestDto.getMenuCreateRequestDtoList().stream()
                 .filter(menuCreateRequestDto -> {
                     // 같은 store에 해당 이름의 메뉴가 존재하면 저장하지 않고 다음 단계로 건너뜁니다.
@@ -148,7 +153,7 @@ public class StoreService {
     }
 
     @Transactional
-    public Page<StoreMenusResponseDto> getMenus(String storeName, Pageable pageable) {
+    public Page<StoreMenusResponseDto> getMenus(String storeName, CustomUserDetails userDetails, Pageable pageable) {
         Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
         if (storeOptional.isEmpty()) {
             throw new NoSuchElementException("해당 가게 없음.");
@@ -156,9 +161,19 @@ public class StoreService {
 
         UUID storeId = storeOptional.get().getStoreId();
         Page<Menu> storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
-        return storeMenuPage
-                .map(StoreMenusResponseDto::new);
+        List<StoreMenusResponseDto> filteredMenuResponseDtoList = storeMenuPage.stream()
+                .filter(menu -> {
+                    if (!SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication().isAuthenticated()
+                            || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER"))) {
+                        return !menu.getOutOfStock();
+                    }
+                    return true;
+                })
+                .map(StoreMenusResponseDto::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(filteredMenuResponseDtoList, pageable, storeMenuPage.getTotalElements());
     }
+
 
     @Transactional
     public void updateStoreMenus(String storeName, StoreMenusUpdateRequestDto storeMenusUpdateRequestDto, CustomUserDetails userDetails) {

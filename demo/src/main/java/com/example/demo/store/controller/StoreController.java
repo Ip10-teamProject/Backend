@@ -88,12 +88,13 @@ public class StoreController {
      *  실제 조회 로직에서는 Store.storeId로 조회합니다.
      */
 
-    @PreAuthorize("!isAuthenticated()")
+    @PreAuthorize("permitAll()")
     @GetMapping("/{storeName}/menus")
     public ResponseEntity<Page<StoreMenusResponseDto>> getStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                                     @AuthenticationPrincipal CustomUserDetails userDetails,
                                                                      @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok()
-                .body(storeService.getMenus(storeName, pageable));
+                .body(storeService.getMenus(storeName, userDetails, pageable));
     }
 
 
