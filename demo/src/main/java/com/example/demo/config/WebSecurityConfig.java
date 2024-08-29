@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -11,8 +12,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -50,8 +53,8 @@ public class WebSecurityConfig {
             .requestMatchers("/auth/signup", "/auth/login").permitAll()
             .requestMatchers("/users/{userId}").hasAnyRole("CUSTOMER", "OWNER", "MASTER")
             .requestMatchers("/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
-            .requestMatchers(HttpMethod.GET, "/stores/{storeName}/menus").permitAll()
-            .requestMatchers("/stores/{storeName}/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+//            .requestMatchers(HttpMethod.GET, "/stores/{storeName}/menus").permitAll()
+//            .requestMatchers("/stores/{storeName}/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
             .requestMatchers("/master/**").hasAnyAuthority("ROLE_MASTER")
             .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
@@ -61,4 +64,5 @@ public class WebSecurityConfig {
 
     return http.build();
   }
+
 }

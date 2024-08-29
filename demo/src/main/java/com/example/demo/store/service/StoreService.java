@@ -2,6 +2,7 @@ package com.example.demo.store.service;
 
 import com.example.demo.category.entity.Category;
 import com.example.demo.category.repository.CategoryRepository;
+import com.example.demo.exception.StoreOwnerNonMatchedException;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
 import com.example.demo.menu.entity.Menu;
@@ -17,6 +18,7 @@ import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,13 +124,13 @@ public class StoreService {
 
         return storeMenusCreateRequestDto.getMenuCreateRequestDtoList().stream()
                 .filter(menuCreateRequestDto -> {
-                    // 해당 이름의 메뉴가 DB에 존재하면 저장하지 않고 다음 단계로 건너뜁니다.
+                    // 같은 store에 해당 이름의 메뉴가 존재하면 저장하지 않고 다음 단계로 건너뜁니다.
                     String requestMenuName = menuCreateRequestDto.getName();
-                    Optional<Menu> menuNameOptional = menuRepository.findByName(requestMenuName);
+                    Optional<Menu> menuNameOptional = menuRepository.findByMenuNameAndStoreId(requestMenuName, store.getStoreId());
                     return menuNameOptional.isEmpty();
                 })
                 .map(menuCreateRequestDto -> {
-                    // 해당 이름의 메뉴가 DB에 존재하지 않을 때만 저장합니다.
+                    // 같은 store에 해당 이름의 메뉴가 존재하지 않을 때만 DB에 저장합니다.
                     Menu menu = Menu.builder()
                             .name(menuCreateRequestDto.getName())
                             .price(menuCreateRequestDto.getPrice())
@@ -165,27 +167,39 @@ public class StoreService {
             throw new NoSuchElementException("해당 가게 없음.");
         }
 
+        Store store = storeOptional.get();
+
+        // 권한이 OWNER일 경우 자신의 store의 menu만 수정할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 수정할 수 있습니다.");
+            }
+        }
+
         storeMenusUpdateRequestDto.getMenuUpdateRequestDtoList().stream()
                 .filter(menuUpdateRequestDto -> {
-                    // 해당 이름의 메뉴가 DB에 존재하지 않으면 수정하지 않고 다음 단계로 건너뜁니다.
+                    // 수정하려는 메뉴가 해당 store에 존재하지 않으면 수정하지 않고 다음 단계로 건너뜁니다.
                     UUID menuId = menuUpdateRequestDto.getMenuId();
-                    Optional<Menu> menuNameOptional = menuRepository.findById(menuId);
+                    Optional<Menu> menuNameOptional = menuRepository.findByMenuIdAndStoreId(menuId, store.getStoreId());
                     return menuNameOptional.isPresent();
                 })
                 .forEach(menuUpdateRequestDto -> {
-                    // 해당 이름의 메뉴가 DB에 존재할 때만 수정합니다.
+                    // 수정하려는 메뉴가 해당 store에 존재할 때만 수정합니다.
                     UUID menuId = menuUpdateRequestDto.getMenuId();
                     Menu menu = menuRepository.findById(menuId).get();
+                    // requestBody에 name 필드가 없으면 수정하지 않습니다.
                     if (menuUpdateRequestDto.getName() != null) {
                         menu.setName(menuUpdateRequestDto.getName());
                     }
+                    // requestBody에 price 필드가 없으면 수정하지 않습니다.
                     if (menuUpdateRequestDto.getPrice() != null) {
                         menu.setPrice(menuUpdateRequestDto.getPrice());
                     }
+                    // requestBody에 description 필드가 없으면 수정하지 않습니다.
                     if (menuUpdateRequestDto.getDescription() != null) {
                         menu.setDescription(menuUpdateRequestDto.getDescription());
                     }
-                    menu.setCreatedBy(userDetails.getUsername());
+                    menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
                 });
 

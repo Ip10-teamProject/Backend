@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,6 +73,7 @@ public class StoreController {
     /**
      *  [ 가게 별 Menu 추가 API ]
      */
+    @PreAuthorize("hasAnyRole('OWNER')")
     @PostMapping("/{storeName}/menus")
     public ResponseEntity<List<StoreMenusCreateResponseDto>> createStoreMenus(@PathVariable(name = "storeName") String storeName,
                                                                               @RequestBody StoreMenusCreateRequestDto storeMenusCreateRequestDto,
@@ -84,6 +87,8 @@ public class StoreController {
      *  해당 API는 Store.storeName으로 요청하지만
      *  실제 조회 로직에서는 Store.storeId로 조회합니다.
      */
+
+    @PreAuthorize("!isAuthenticated()")
     @GetMapping("/{storeName}/menus")
     public ResponseEntity<Page<StoreMenusResponseDto>> getStoreMenus(@PathVariable(name = "storeName") String storeName,
                                                                      @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -92,7 +97,7 @@ public class StoreController {
     }
 
 
-
+    @PreAuthorize("hasAnyRole('MASTER', 'OWNER')")
     @PatchMapping("/{storeName}/menus")
     public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
                                               @RequestBody StoreMenusUpdateRequestDto storeMenusUpdateRequestDto,
