@@ -39,9 +39,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        // GET '/api/users/{id}'에서 id 값을 파싱
-        //Long id = parseUserId(request);
-
         final String authorizationHeader = request.getHeader("Authorization");
 
         String jwt = null;
@@ -53,7 +50,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             userId = extractUserId(jwt);
             username = extractUsername(jwt);
-//            role = extractRole(jwt);
         }
 
         boolean condition = SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication() == null;
@@ -74,26 +70,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private Long parseUserId(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-
-        // URL이 /api/users/{id} 형태라고 가정하고 파싱
-        String[] uriParts = requestURI.split("/");
-
-        Long id = null;
-        if (uriParts.length > 3 && uriParts[2].equals("users")) {
-            try {
-                id = Long.parseLong(uriParts[3]);
-                // id를 이용한 추가 로직 작성 가능
-                System.out.println("Extracted ID: " + id);
-            } catch (NumberFormatException e) {
-                // id가 올바른 형식이 아닐 경우 예외 처리
-                System.err.println("Invalid ID format");
-            }
-        }
-
-        return id;
-    }
 
     /**
      *  ("Bearer "을 제거한) JWT accessToken으로부터 user_id를 추출

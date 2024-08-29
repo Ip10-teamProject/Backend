@@ -17,14 +17,15 @@ import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -122,6 +123,13 @@ public class StoreService {
 
         Store store = storeOptional.get();
 
+        // 권한이 OWNER일 경우 자신의 store의 menu만 수정할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 추가할 수 있습니다.");
+            }
+        }
+
         return storeMenusCreateRequestDto.getMenuCreateRequestDtoList().stream()
                 .filter(menuCreateRequestDto -> {
                     // 같은 store에 해당 이름의 메뉴가 존재하면 저장하지 않고 다음 단계로 건너뜁니다.
@@ -148,7 +156,7 @@ public class StoreService {
     }
 
     @Transactional
-    public Page<StoreMenusResponseDto> getMenus(String storeName, Pageable pageable) {
+    public Page<StoreMenusResponseDto> getMenus(String storeName, CustomUserDetails userDetails, Pageable pageable) {
         Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
         if (storeOptional.isEmpty()) {
             throw new NoSuchElementException("해당 가게 없음.");
@@ -156,8 +164,17 @@ public class StoreService {
 
         UUID storeId = storeOptional.get().getStoreId();
         Page<Menu> storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
-        return storeMenuPage
-                .map(StoreMenusResponseDto::new);
+        List<StoreMenusResponseDto> filteredMenuResponseDtoList = storeMenuPage.stream()
+                .filter(menu -> {
+                    if (!SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication().isAuthenticated()
+                            || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER"))) {
+                        return !menu.getOutOfStock();
+                    }
+                    return true;
+                })
+                .map(StoreMenusResponseDto::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(filteredMenuResponseDtoList, pageable, storeMenuPage.getTotalElements());
     }
 
     @Transactional
@@ -198,6 +215,10 @@ public class StoreService {
                     // requestBody에 description 필드가 없으면 수정하지 않습니다.
                     if (menuUpdateRequestDto.getDescription() != null) {
                         menu.setDescription(menuUpdateRequestDto.getDescription());
+                    }
+                    // requestBody에 stock 필드가 없으면 수정하지 않습니다.
+                    if (menuUpdateRequestDto.getStock() != null) {
+                        menu.setStock(menuUpdateRequestDto.getStock());
                     }
                     menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
