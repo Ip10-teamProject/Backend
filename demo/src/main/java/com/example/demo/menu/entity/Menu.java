@@ -35,6 +35,12 @@ public class Menu extends TimeStamped implements Serializable {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    @Column
+    private Integer stock;
+
+    @Column
+    private Boolean outOfStock;
+
     public Menu(MenuCreateRequestDto menuCreateRequestDto) {
         this.name = menuCreateRequestDto.getName();
         this.description = menuCreateRequestDto.getDescription();
