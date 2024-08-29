@@ -12,9 +12,15 @@ import java.util.UUID;
 
 public interface MenuRepository extends JpaRepository<Menu, UUID> {
 
-    // Menu.storeId를 통해 Menu 목록을 조회
+    // Menu.store.storeId를 통해 Menu 목록을 조회
     @Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId")
     Page<Menu> findByStoreId(@Param("storeId") UUID storeId, Pageable pageable);
 
     Optional<Menu> findByName(String name);
+
+    @Query("SELECT m FROM  Menu m WHERE m.name = :name and m.store.storeId = :storeId")
+    Optional<Menu> findByMenuNameAndStoreId(@Param("name") String name, @Param("storeId") UUID storeId);
+
+    @Query("SELECT m FROM  Menu m WHERE m.id = :menuId and m.store.storeId = :storeId")
+    Optional<Menu> findByMenuIdAndStoreId(@Param("menuId") UUID menuId, @Param("storeId") UUID storeId);
 }
