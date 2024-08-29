@@ -219,6 +219,11 @@ public class StoreService {
                     // requestBody에 stock 필드가 없으면 수정하지 않습니다.
                     if (menuUpdateRequestDto.getStock() != null) {
                         menu.setStock(menuUpdateRequestDto.getStock());
+                        if (menuUpdateRequestDto.getStock().equals(0)) {
+                            menu.setOutOfStock(true);
+                        } else {
+                            menu.setOutOfStock(false);
+                        }
                     }
                     menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
