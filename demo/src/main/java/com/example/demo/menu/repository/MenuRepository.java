@@ -18,9 +18,9 @@ public interface MenuRepository extends JpaRepository<Menu, UUID> {
 
     Optional<Menu> findByName(String name);
 
-    @Query("SELECT m FROM  Menu m WHERE m.name = :name and m.store.storeId = :storeId")
+    @Query("SELECT m FROM  Menu m WHERE m.name = :name AND m.store.storeId = :storeId AND m.deletedBy IS NOT NULL")
     Optional<Menu> findByMenuNameAndStoreId(@Param("name") String name, @Param("storeId") UUID storeId);
 
-    @Query("SELECT m FROM  Menu m WHERE m.id = :menuId and m.store.storeId = :storeId")
+    @Query("SELECT m FROM  Menu m WHERE m.id = :menuId AND m.store.storeId = :storeId AND m.deletedBy IS NOT NULL")
     Optional<Menu> findByMenuIdAndStoreId(@Param("menuId") UUID menuId, @Param("storeId") UUID storeId);
 }

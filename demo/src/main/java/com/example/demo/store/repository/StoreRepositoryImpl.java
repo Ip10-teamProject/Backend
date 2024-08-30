@@ -23,7 +23,6 @@ import static com.example.demo.category.entity.QCategory.category;
 import static com.example.demo.location.entity.QLocation.location;
 import static com.example.demo.store.entity.QStore.store;
 import static com.example.demo.store.entity.QStoreMapping.storeMapping;
-
 @RequiredArgsConstructor
 public class StoreRepositoryImpl implements StoreRepositoryCustom {
     private final JPAQueryFactory queryFactory;
@@ -205,7 +204,6 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 .where(store.storeName.contains(name));
         return new PageImpl<>(responseDtos, pageable,countQuery.fetchCount());
     }
-
     @Override
     public List<StoreMapping> getReferenceStore(UUID storeId) {
         QueryResults<StoreMapping> mainQuery = queryFactory

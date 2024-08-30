@@ -36,15 +36,13 @@ public class StoreService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final StoreMappingRepository storeMappingRepository;
-    private final UserRepository userRepository;
     private final MenuRepository menuRepository;
+
     @Transactional
-    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->
-            new NullPointerException(""));
-        Store store=Store.createStore(storeCreateRequestDto.getStoreName(),
+    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, User user) {
+        Store store = Store.createStore(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getDescription(),
-                locationRepository.findById(storeCreateRequestDto.getLocationId()).get(),user);
+                locationRepository.findById(storeCreateRequestDto.getLocationId()).get(), user);
         storeRepository.save(store);
 
         List<StoreMapping> storeMappings = new ArrayList<>();
@@ -65,26 +63,36 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreResponseDto updateStore(UUID storeId, StoreUpdateRequestDto storeUpdateRequestDto) {
-        Store store =storeRepository.findById(storeId)
+    public StoreResponseDto updateStore(UUID storeId, StoreUpdateRequestDto storeUpdateRequestDto, User user) {
+        Store store = storeRepository.findById(storeId)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
-                new NullPointerException("해당가게없음")
-        );
-        store.updateStore(storeUpdateRequestDto.getStoreName(),storeUpdateRequestDto.getDescription());
+                        new NullPointerException("해당가게없음")
+                );
+        if (user.getRole().name().equals("OWNER")) {
+            if (!store.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("해당가게의 주인이 아님");
+            }
+        }
+        store.updateStore(storeUpdateRequestDto.getStoreName(), storeUpdateRequestDto.getDescription());
         storeRepository.save(store);
         return storeRepository.getStore(store.getStoreId());
     }
 
     @Transactional
-    public void deleteStore(UUID storeId) {
-        Store store =storeRepository.findById(storeId)
+    public void deleteStore(UUID storeId, User user) {
+        Store store = storeRepository.findById(storeId)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
-                new NullPointerException("해당가게없음")
-        );
+                        new NullPointerException("해당가게없음")
+                );
+        if (user.getRole().name().equals("OWNER")) {
+            if (!store.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("해당가게의 주인이 아님");
+            }
+        }
         store.deleteStore(); // 맵핑 연관된거 null로 변경
-        List<StoreMapping>storeMappings = storeRepository.getReferenceStore(store.getStoreId());
+        List<StoreMapping> storeMappings = storeRepository.getReferenceStore(store.getStoreId());
         for (StoreMapping storeMapping : storeMappings) {
             storeMapping.storeClear();
         }
@@ -93,12 +101,12 @@ public class StoreService {
     }
 
     public Page<StoreResponseDto> categoryStores(String name, Pageable pageable) {
-        Category category=categoryRepository.findBycategoryName(name)
+        Category category = categoryRepository.findBycategoryName(name)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
                         new NullPointerException("해당카테고리없음")
                 );
-        return storeRepository.CategoryStores(category.getCategoryId(),pageable);
+        return storeRepository.CategoryStores(category.getCategoryId(), pageable);
     }
 
     public Page<StoreResponseDto> locationStores(String name, Pageable pageable) {
@@ -107,11 +115,11 @@ public class StoreService {
                 .orElseThrow(() ->
                         new NullPointerException("해당지역없음")
                 );
-        return storeRepository.locationStores(location.getLocationId(),pageable);
+        return storeRepository.locationStores(location.getLocationId(), pageable);
     }
 
     public Page<StoreResponseDto> getSearchStores(String name, Pageable pageable) {
-        return storeRepository.SearchStores(name,pageable);
+        return storeRepository.SearchStores(name, pageable);
     }
 
     @Transactional
