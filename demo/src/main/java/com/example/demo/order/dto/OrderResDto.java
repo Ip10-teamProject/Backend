@@ -2,6 +2,7 @@ package com.example.demo.order.dto;
 
 import com.example.demo.order.entity.Order;
 import com.example.demo.order.entity.OrderStatus;
+import com.example.demo.order.entity.OrderType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,18 +12,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderResDto {
     private UUID id;
-    private Long userId;
-    private UUID paymentId;
-    private UUID storeId;
+    private String userName;
     private String memo;
+    private String address;
     private OrderStatus status;
+    private OrderType type;
 
     public OrderResDto(Order order) {
         this.id = order.getId();
-        this.userId = order.getUserId();
-        this.paymentId = order.getPaymentId();
-        this.storeId = order.getStoreId();
+        this.userName = order.getUser().getUsername();
         this.memo = order.getMemo();
+        this.address = order.getAddress();
         this.status = order.getStatus();
+        this.type = order.getType();
     }
 }
