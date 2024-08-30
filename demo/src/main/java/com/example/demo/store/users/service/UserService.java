@@ -1,10 +1,10 @@
-package com.example.demo.users.service;
+package com.example.demo.store.users.service;
 
-import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRepository;
+import com.example.demo.store.users.domain.User;
+import com.example.demo.store.users.domain.UserRepository;
+import com.example.demo.store.users.dto.UserInfoDto;
 import com.example.demo.security.CustomUserDetails;
 
-import com.example.demo.users.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
