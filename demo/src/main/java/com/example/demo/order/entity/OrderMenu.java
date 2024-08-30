@@ -32,8 +32,17 @@ public class OrderMenu extends TimeStamped {
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
+    @Column
+    private Integer amount;
+
     public OrderMenu(Order order, Menu menu) {
         this.order = order;
         this.menu = menu;
+    }
+
+    public OrderMenu(Order order, Menu menu, Integer amount) {
+        this.order = order;
+        this.menu = menu;
+        this.amount = amount;
     }
 }

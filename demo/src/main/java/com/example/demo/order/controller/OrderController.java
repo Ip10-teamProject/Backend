@@ -3,6 +3,7 @@ package com.example.demo.order.controller;
 import com.example.demo.order.dto.OrderReqDto;
 import com.example.demo.order.dto.OrderResDto;
 import com.example.demo.order.dto.OrderStatusReqDto;
+import com.example.demo.order.dto.OrderUpdateReqDto;
 import com.example.demo.order.service.OrderService;
 import com.example.demo.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -67,10 +68,10 @@ public class OrderController {
         return orderService.create(orderReqDto, userDetails);
     }
 
-//    @PutMapping("/{orderId}")
-//    public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderReqDto orderReqDto) {
-//        return orderService.update(orderId, orderReqDto);
-//    }
+    @PutMapping("/{orderId}")
+    public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderUpdateReqDto orderUpdateReqDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return orderService.update(orderId, orderUpdateReqDto, userDetails);
+    }
 
     @PutMapping("/{orderId}/cancel")
     public String cancel(@PathVariable UUID orderId, @AuthenticationPrincipal CustomUserDetails userDetails) {
