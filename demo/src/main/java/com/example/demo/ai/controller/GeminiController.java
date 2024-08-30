@@ -19,8 +19,8 @@ public class GeminiController {
           @RequestBody
           GeminiRequest request
   ) {
-    // 서비스에서 API 호출하고 응답 받기
-    return geminiService.RequestAndResponseSave(request);
+    // 서비스에서 Gemini API 호출하고 응답 받기
+    return geminiService.RequestAndResponse(request);
   }
 
 }

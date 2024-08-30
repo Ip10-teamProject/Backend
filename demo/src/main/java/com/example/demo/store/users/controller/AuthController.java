@@ -1,8 +1,8 @@
-package com.example.demo.users.controller;
+package com.example.demo.store.users.controller;
 
-import com.example.demo.users.dto.LoginRequestDto;
-import com.example.demo.users.service.AuthService;
-import com.example.demo.users.dto.SignupRequestDto;
+import com.example.demo.store.users.dto.LoginRequestDto;
+import com.example.demo.store.users.service.AuthService;
+import com.example.demo.store.users.dto.SignupRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

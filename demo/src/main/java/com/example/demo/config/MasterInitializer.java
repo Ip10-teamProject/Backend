@@ -1,8 +1,8 @@
 package com.example.demo.config;
 
-import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRepository;
-import com.example.demo.users.domain.UserRoleEnum;
+import com.example.demo.store.users.domain.User;
+import com.example.demo.store.users.domain.UserRepository;
+import com.example.demo.store.users.domain.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

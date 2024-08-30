@@ -16,12 +16,6 @@ public class GeminiRequest {
 
   private List<Content> contents;
 
-  public GeminiRequest(String text) {
-    TextPart part = new TextPart(text);
-    Content content = new Content(Collections.singletonList(part));
-    this.contents = Arrays.asList(content);
-  }
-
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor

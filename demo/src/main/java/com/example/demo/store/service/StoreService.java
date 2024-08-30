@@ -14,7 +14,7 @@ import com.example.demo.store.entity.Store;
 import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
 import com.example.demo.store.repository.StoreRepository;
-import com.example.demo.users.domain.User;
+import com.example.demo.store.users.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

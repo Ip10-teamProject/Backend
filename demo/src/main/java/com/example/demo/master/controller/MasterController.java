@@ -1,9 +1,9 @@
 package com.example.demo.master.controller;
 
 import com.example.demo.master.service.MasterService;
-import com.example.demo.users.dto.UpdateRoleDto;
-import com.example.demo.users.dto.UpdateUserDto;
-import com.example.demo.users.dto.UserInfoDto;
+import com.example.demo.store.users.dto.UpdateRoleDto;
+import com.example.demo.store.users.dto.UpdateUserDto;
+import com.example.demo.store.users.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

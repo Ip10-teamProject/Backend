@@ -1,4 +1,4 @@
-package com.example.demo.users.domain;
+package com.example.demo.store.users.domain;
 
 import com.example.demo.global.TimeStamped;
 import com.example.demo.store.entity.Store;

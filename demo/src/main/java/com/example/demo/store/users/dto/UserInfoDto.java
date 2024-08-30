@@ -1,6 +1,6 @@
-package com.example.demo.users.dto;
+package com.example.demo.store.users.dto;
 
-import com.example.demo.users.domain.User;
+import com.example.demo.store.users.domain.User;
 import lombok.*;
 
 @Getter

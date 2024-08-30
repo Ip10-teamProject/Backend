@@ -18,5 +18,8 @@ public class Gemini {
   private String responseContents;
 
 
-
+  public Gemini(String request, String response) {
+    this.requestContents = request;
+    this.responseContents = response;
+  }
 }

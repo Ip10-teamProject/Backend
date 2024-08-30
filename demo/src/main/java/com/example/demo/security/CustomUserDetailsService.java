@@ -1,7 +1,7 @@
 package com.example.demo.security;
 
-import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRepository;
+import com.example.demo.store.users.domain.User;
+import com.example.demo.store.users.domain.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import com.example.demo.users.domain.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
