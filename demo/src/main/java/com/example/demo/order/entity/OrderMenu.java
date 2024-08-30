@@ -2,9 +2,6 @@ package com.example.demo.order.entity;
 
 import com.example.demo.global.TimeStamped;
 import com.example.demo.menu.entity.Menu;
-import com.example.demo.order.dto.OrderReqDto;
-import com.example.demo.store.entity.Store;
-import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

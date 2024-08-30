@@ -1,8 +1,8 @@
-package com.example.demo.store.users.service;
+package com.example.demo.users.service;
 
-import com.example.demo.store.users.domain.User;
-import com.example.demo.store.users.domain.UserRepository;
-import com.example.demo.store.users.dto.UserInfoDto;
+import com.example.demo.users.domain.User;
+import com.example.demo.users.domain.UserRepository;
+import com.example.demo.users.dto.UserInfoDto;
 import com.example.demo.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;

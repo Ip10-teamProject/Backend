@@ -1,4 +1,4 @@
-package com.example.demo.store.users.exeption;
+package com.example.demo.users.exeption;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

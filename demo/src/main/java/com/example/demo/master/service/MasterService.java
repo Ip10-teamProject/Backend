@@ -1,11 +1,11 @@
 package com.example.demo.master.service;
 
-import com.example.demo.store.users.dto.UpdateRoleDto;
-import com.example.demo.store.users.dto.UpdateUserDto;
-import com.example.demo.store.users.dto.UserInfoDto;
-import com.example.demo.store.users.domain.User;
-import com.example.demo.store.users.domain.UserRepository;
-import com.example.demo.store.users.domain.UserRoleEnum;
+import com.example.demo.users.dto.UpdateRoleDto;
+import com.example.demo.users.dto.UpdateUserDto;
+import com.example.demo.users.dto.UserInfoDto;
+import com.example.demo.users.domain.User;
+import com.example.demo.users.domain.UserRepository;
+import com.example.demo.users.domain.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

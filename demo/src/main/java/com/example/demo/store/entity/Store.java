@@ -3,7 +3,7 @@ package com.example.demo.store.entity;
 import com.example.demo.global.TimeStamped;
 import com.example.demo.location.entity.Location;
 import com.example.demo.menu.entity.Menu;
-import com.example.demo.store.users.domain.User;
+import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 

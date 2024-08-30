@@ -1,6 +1,6 @@
 package com.example.demo.global;
 
-import com.example.demo.store.users.domain.User;
+import com.example.demo.users.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,10 +1,10 @@
-package com.example.demo.store.users.service;
+package com.example.demo.users.service;
 
-import com.example.demo.store.users.domain.User;
-import com.example.demo.store.users.domain.UserRepository;
-import com.example.demo.store.users.domain.UserRoleEnum;
-import com.example.demo.store.users.dto.LoginRequestDto;
-import com.example.demo.store.users.dto.SignupRequestDto;
+import com.example.demo.users.domain.User;
+import com.example.demo.users.domain.UserRepository;
+import com.example.demo.users.domain.UserRoleEnum;
+import com.example.demo.users.dto.LoginRequestDto;
+import com.example.demo.users.dto.SignupRequestDto;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
