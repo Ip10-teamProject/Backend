@@ -52,7 +52,7 @@ public class WebSecurityConfig {
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
             .requestMatchers("/auth/signup", "/auth/login").permitAll()
             .requestMatchers("/users/{userId}").hasAnyRole("CUSTOMER", "OWNER", "MASTER")
-            .requestMatchers("/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
+            .requestMatchers("/menus", "/ai/commend").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
 //            .requestMatchers(HttpMethod.GET, "/stores/{storeName}/menus").permitAll()
 //            .requestMatchers("/stores/{storeName}/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
             .requestMatchers("/master/**").hasAnyAuthority("ROLE_MASTER")

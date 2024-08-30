@@ -3,45 +3,37 @@ package com.example.demo.ai.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @NoArgsConstructor
+@Setter
 @Getter
 public class GeminiRequest {
 
   private List<Content> contents;
 
   public GeminiRequest(String text) {
-    Part part = new TextPart(text);
+    TextPart part = new TextPart(text);
     Content content = new Content(Collections.singletonList(part));
     this.contents = Arrays.asList(content);
   }
 
-  public GeminiRequest(String text, InlineData inlineData) {
-    List<Content> contents = List.of(
-            new Content(
-                    List.of(
-                            new TextPart(text),
-                            new InlineDataPart(inlineData)
-                    )
-            )
-    );
-
-    this.contents = contents;
-  }
-
   @Getter
+  @NoArgsConstructor
   @AllArgsConstructor
   private static class Content {
-    private List<Part> parts;
+    private List<TextPart> parts;
   }
+
 
   interface Part {}
 
   @Getter
+  @NoArgsConstructor
   @AllArgsConstructor
   private static class TextPart implements Part {
     public String text;
