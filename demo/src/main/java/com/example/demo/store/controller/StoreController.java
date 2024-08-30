@@ -103,10 +103,11 @@ public class StoreController {
     @PreAuthorize("permitAll()")
     @GetMapping("/{storeName}/menus")
     public ResponseEntity<Page<StoreMenusResponseDto>> getStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                                     @RequestParam(name = "menuName", required = false) String menuName,
                                                                      @AuthenticationPrincipal CustomUserDetails userDetails,
                                                                      @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok()
-                .body(storeService.getMenus(storeName, userDetails, pageable));
+                .body(storeService.getMenus(storeName, menuName, userDetails, pageable));
     }
 
 
