@@ -13,6 +13,7 @@ public class MenuCreateRequestDto {
 
     private String name;
     private Integer price;
+    private Integer stock;
     private String description;
     private UUID storeId;
 }

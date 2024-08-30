@@ -1,5 +1,6 @@
 package com.example.demo.store.controller;
 
+import com.example.demo.menu.dto.MenuDeleteRequestDto;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.store.dto.*;
 import com.example.demo.store.service.StoreService;
@@ -118,4 +119,12 @@ public class StoreController {
         return ResponseEntity.ok("수정 완료");
     }
 
+    @PreAuthorize("hasAnyRole('MASTER', 'OWNER')")
+    @DeleteMapping("/{storeName}/menus")
+    public ResponseEntity<String> deleteStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                   @RequestBody MenuDeleteRequestDto storeMenusDeleteRequestDto,
+                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+        storeService.deleteStoreMenus(storeName, storeMenusDeleteRequestDto, userDetails);
+        return ResponseEntity.ok("삭제 완료");
+    }
 }

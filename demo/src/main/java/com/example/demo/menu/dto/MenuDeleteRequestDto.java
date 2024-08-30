@@ -11,6 +11,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreMenusDeleteRequestDto {
+public class MenuDeleteRequestDto {
     private List<UUID> menuIds = new ArrayList<>();
 }
