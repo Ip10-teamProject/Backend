@@ -5,6 +5,7 @@ import com.example.demo.category.repository.CategoryRepository;
 import com.example.demo.exception.StoreOwnerNonMatchedException;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
+import com.example.demo.menu.dto.MenuDeleteRequestDto;
 import com.example.demo.menu.entity.Menu;
 import com.example.demo.menu.repository.MenuRepository;
 import com.example.demo.security.CustomUserDetails;
@@ -14,7 +15,6 @@ import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
 import com.example.demo.store.repository.StoreRepository;
 import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -152,6 +153,12 @@ public class StoreService {
                             .price(menuCreateRequestDto.getPrice())
                             .description(menuCreateRequestDto.getDescription())
                             .build();
+                    if (menuCreateRequestDto.getStock() == null || menuCreateRequestDto.getStock().equals(0)) {
+                        menu.setStock(0);
+                        menu.setOutOfStock(true);
+                    }
+                    menu.setStock(menuCreateRequestDto.getStock());
+                    menu.setOutOfStock(false);
                     menu.setStore(store);
                     menu.setCreatedBy(userDetails.getUsername());
                     menu.setUpdatedBy(userDetails.getUsername());
@@ -182,6 +189,7 @@ public class StoreService {
                 })
                 .map(StoreMenusResponseDto::new)
                 .collect(Collectors.toList());
+
         return new PageImpl<>(filteredMenuResponseDtoList, pageable, storeMenuPage.getTotalElements());
     }
 
@@ -236,7 +244,36 @@ public class StoreService {
                     menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
                 });
-
     }
 
+    @Transactional
+    public void deleteStoreMenus(String storeName, MenuDeleteRequestDto menuDeleteRequestDto, CustomUserDetails userDetails) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        Store store = storeOptional.get();
+
+        // 권한이 OWNER일 경우 자신의 store의 menu만 삭제할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 삭제할 수 있습니다.");
+            }
+        }
+
+        menuDeleteRequestDto.getMenuIds().stream()
+                .filter(menuId -> {
+                    // 삭제하려는 메뉴가 해당 store에 존재하지 않으면 삭제하지 않고 다음 단계로 건너뜁니다.
+                    Optional<Menu> menuNameOptional = menuRepository.findByMenuIdAndStoreId(menuId, store.getStoreId());
+                    return menuNameOptional.isPresent();
+                })
+                .forEach(menuId -> {
+                    Menu menu = menuRepository.findById(menuId).get();
+                    menu.setDeletedAt(LocalDateTime.now());
+                    menu.setDeletedBy(userDetails.getUsername());
+                    menu.setUpdatedBy(userDetails.getUsername());
+                    menuRepository.save(menu);
+                });
+    }
 }
