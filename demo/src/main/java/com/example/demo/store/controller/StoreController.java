@@ -1,5 +1,6 @@
 package com.example.demo.store.controller;
 
+import com.example.demo.menu.dto.StoreMenusDeleteRequestDto;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.store.dto.*;
 import com.example.demo.store.service.StoreService;
@@ -100,12 +101,18 @@ public class StoreController {
 
     @PreAuthorize("hasAnyRole('MASTER', 'OWNER')")
     @PatchMapping("/{storeName}/menus")
-    public ResponseEntity<?> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
+    public ResponseEntity<String> updateStoreMenus(@PathVariable(name = "storeName") String storeName,
                                               @RequestBody StoreMenusUpdateRequestDto storeMenusUpdateRequestDto,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
         storeService.updateStoreMenus(storeName, storeMenusUpdateRequestDto, userDetails);
         return ResponseEntity.ok("수정 완료");
     }
 
-
+    @DeleteMapping("/{storeName}/menus")
+    public ResponseEntity<String> deleteStoreMenus(@PathVariable(name = "storeName") String storeName,
+                                                   @RequestBody StoreMenusDeleteRequestDto storeMenusDeleteRequestDto,
+                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+        storeService.deleteStoreMenus(storeName, storeMenusDeleteRequestDto, userDetails);
+        return ResponseEntity.ok("삭제 완료");
+    }
 }

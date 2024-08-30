@@ -5,6 +5,7 @@ import com.example.demo.category.repository.CategoryRepository;
 import com.example.demo.exception.StoreOwnerNonMatchedException;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
+import com.example.demo.menu.dto.StoreMenusDeleteRequestDto;
 import com.example.demo.menu.entity.Menu;
 import com.example.demo.menu.repository.MenuRepository;
 import com.example.demo.security.CustomUserDetails;
@@ -24,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -174,6 +176,7 @@ public class StoreService {
                 })
                 .map(StoreMenusResponseDto::new)
                 .collect(Collectors.toList());
+
         return new PageImpl<>(filteredMenuResponseDtoList, pageable, storeMenuPage.getTotalElements());
     }
 
@@ -228,7 +231,36 @@ public class StoreService {
                     menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
                 });
-
     }
 
+    @Transactional
+    public void deleteStoreMenus(String storeName, StoreMenusDeleteRequestDto storeMenusDeleteRequestDto, CustomUserDetails userDetails) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        Store store = storeOptional.get();
+
+        // 권한이 OWNER일 경우 자신의 store의 menu만 삭제할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 삭제할 수 있습니다.");
+            }
+        }
+
+        storeMenusDeleteRequestDto.getMenuIds().stream()
+                .filter(menuId -> {
+                    // 삭제하려는 메뉴가 해당 store에 존재하지 않으면 삭제하지 않고 다음 단계로 건너뜁니다.
+                    Optional<Menu> menuNameOptional = menuRepository.findByMenuIdAndStoreId(menuId, store.getStoreId());
+                    return menuNameOptional.isPresent();
+                })
+                .forEach(menuId -> {
+                    Menu menu = menuRepository.findById(menuId).get();
+                    menu.setDeletedAt(LocalDateTime.now());
+                    menu.setDeletedBy(userDetails.getUsername());
+                    menu.setUpdatedBy(userDetails.getUsername());
+                    menuRepository.save(menu);
+                });
+    }
 }
