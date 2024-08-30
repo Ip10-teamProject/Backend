@@ -56,6 +56,10 @@ public class WebSecurityConfig {
 //            .requestMatchers(HttpMethod.GET, "/stores/{storeName}/menus").permitAll()
 //            .requestMatchers("/stores/{storeName}/menus").hasAnyAuthority("ROLE_OWNER", "ROLE_MASTER")
             .requestMatchers("/master/**").hasAnyAuthority("ROLE_MASTER")
+            .requestMatchers("/swagger-ui.html").permitAll()
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/swagger-resources/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
             .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 

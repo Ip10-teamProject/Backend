@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuUpdateRequestDto {
-    private UUID menuId;
-    private String name;
-    private Integer price;
-    private Integer stock;
-    private String description;
+public class MenuDeleteRequestDto {
+    private List<UUID> menuIds = new ArrayList<>();
 }

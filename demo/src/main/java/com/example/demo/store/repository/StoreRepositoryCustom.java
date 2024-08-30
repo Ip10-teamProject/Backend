@@ -19,4 +19,6 @@ public interface StoreRepositoryCustom {
     Page<StoreResponseDto> locationStores(UUID locationId, Pageable pageable);
 
     Page<StoreResponseDto> SearchStores(String name, Pageable pageable);
+
+
 }

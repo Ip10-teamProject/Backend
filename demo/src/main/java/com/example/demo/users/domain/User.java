@@ -1,10 +1,13 @@
 package com.example.demo.users.domain;
 
 import com.example.demo.global.TimeStamped;
+import com.example.demo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +35,9 @@ public class User extends TimeStamped implements Serializable {
 
   @Enumerated(value = EnumType.STRING)
   private UserRoleEnum role;
+
+  @OneToMany(mappedBy = "user")
+  private List<Store> stores = new ArrayList<>();
 
   @Column
   private boolean isPublic = true;

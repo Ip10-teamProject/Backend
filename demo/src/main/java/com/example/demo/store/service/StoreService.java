@@ -5,6 +5,7 @@ import com.example.demo.category.repository.CategoryRepository;
 import com.example.demo.exception.StoreOwnerNonMatchedException;
 import com.example.demo.location.entity.Location;
 import com.example.demo.location.repository.LocationRepository;
+import com.example.demo.menu.dto.MenuDeleteRequestDto;
 import com.example.demo.menu.entity.Menu;
 import com.example.demo.menu.repository.MenuRepository;
 import com.example.demo.security.CustomUserDetails;
@@ -14,17 +15,18 @@ import com.example.demo.store.entity.StoreMapping;
 import com.example.demo.store.repository.StoreMappingRepository;
 import com.example.demo.store.repository.StoreRepository;
 import com.example.demo.users.domain.User;
-import com.example.demo.users.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +35,13 @@ public class StoreService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final StoreMappingRepository storeMappingRepository;
-    private final UserRepository userRepository;
     private final MenuRepository menuRepository;
+
     @Transactional
-    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->
-            new NullPointerException(""));
-        Store store=Store.createStore(storeCreateRequestDto.getStoreName(),
+    public StoreResponseDto addStore(StoreCreateRequestDto storeCreateRequestDto, User user) {
+        Store store = Store.createStore(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getDescription(),
-                locationRepository.findById(storeCreateRequestDto.getLocationId()).get(),user);
+                locationRepository.findById(storeCreateRequestDto.getLocationId()).get(), user);
         storeRepository.save(store);
 
         List<StoreMapping> storeMappings = new ArrayList<>();
@@ -62,26 +62,36 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreResponseDto updateStore(UUID storeId, StoreUpdateRequestDto storeUpdateRequestDto) {
-        Store store =storeRepository.findById(storeId)
+    public StoreResponseDto updateStore(UUID storeId, StoreUpdateRequestDto storeUpdateRequestDto, User user) {
+        Store store = storeRepository.findById(storeId)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
-                new NullPointerException("해당가게없음")
-        );
-        store.updateStore(storeUpdateRequestDto.getStoreName(),storeUpdateRequestDto.getDescription());
+                        new NullPointerException("해당가게없음")
+                );
+        if (user.getRole().name().equals("OWNER")) {
+            if (!store.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("해당가게의 주인이 아님");
+            }
+        }
+        store.updateStore(storeUpdateRequestDto.getStoreName(), storeUpdateRequestDto.getDescription());
         storeRepository.save(store);
         return storeRepository.getStore(store.getStoreId());
     }
 
     @Transactional
-    public void deleteStore(UUID storeId) {
-        Store store =storeRepository.findById(storeId)
+    public void deleteStore(UUID storeId, User user) {
+        Store store = storeRepository.findById(storeId)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
-                new NullPointerException("해당가게없음")
-        );
+                        new NullPointerException("해당가게없음")
+                );
+        if (user.getRole().name().equals("OWNER")) {
+            if (!store.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("해당가게의 주인이 아님");
+            }
+        }
         store.deleteStore(); // 맵핑 연관된거 null로 변경
-        List<StoreMapping>storeMappings = storeRepository.getReferenceStore(store.getStoreId());
+        List<StoreMapping> storeMappings = storeRepository.getReferenceStore(store.getStoreId());
         for (StoreMapping storeMapping : storeMappings) {
             storeMapping.storeClear();
         }
@@ -90,12 +100,12 @@ public class StoreService {
     }
 
     public Page<StoreResponseDto> categoryStores(String name, Pageable pageable) {
-        Category category=categoryRepository.findBycategoryName(name)
+        Category category = categoryRepository.findBycategoryName(name)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() ->
                         new NullPointerException("해당카테고리없음")
                 );
-        return storeRepository.CategoryStores(category.getCategoryId(),pageable);
+        return storeRepository.CategoryStores(category.getCategoryId(), pageable);
     }
 
     public Page<StoreResponseDto> locationStores(String name, Pageable pageable) {
@@ -104,11 +114,11 @@ public class StoreService {
                 .orElseThrow(() ->
                         new NullPointerException("해당지역없음")
                 );
-        return storeRepository.locationStores(location.getLocationId(),pageable);
+        return storeRepository.locationStores(location.getLocationId(), pageable);
     }
 
     public Page<StoreResponseDto> getSearchStores(String name, Pageable pageable) {
-        return storeRepository.SearchStores(name,pageable);
+        return storeRepository.SearchStores(name, pageable);
     }
 
     @Transactional
@@ -121,6 +131,13 @@ public class StoreService {
         }
 
         Store store = storeOptional.get();
+
+        // 권한이 OWNER일 경우 자신의 store의 menu만 수정할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 추가할 수 있습니다.");
+            }
+        }
 
         return storeMenusCreateRequestDto.getMenuCreateRequestDtoList().stream()
                 .filter(menuCreateRequestDto -> {
@@ -136,6 +153,12 @@ public class StoreService {
                             .price(menuCreateRequestDto.getPrice())
                             .description(menuCreateRequestDto.getDescription())
                             .build();
+                    if (menuCreateRequestDto.getStock() == null || menuCreateRequestDto.getStock().equals(0)) {
+                        menu.setStock(0);
+                        menu.setOutOfStock(true);
+                    }
+                    menu.setStock(menuCreateRequestDto.getStock());
+                    menu.setOutOfStock(false);
                     menu.setStore(store);
                     menu.setCreatedBy(userDetails.getUsername());
                     menu.setUpdatedBy(userDetails.getUsername());
@@ -148,7 +171,7 @@ public class StoreService {
     }
 
     @Transactional
-    public Page<StoreMenusResponseDto> getMenus(String storeName, Pageable pageable) {
+    public Page<StoreMenusResponseDto> getMenus(String storeName, CustomUserDetails userDetails, Pageable pageable) {
         Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
         if (storeOptional.isEmpty()) {
             throw new NoSuchElementException("해당 가게 없음.");
@@ -156,8 +179,18 @@ public class StoreService {
 
         UUID storeId = storeOptional.get().getStoreId();
         Page<Menu> storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
-        return storeMenuPage
-                .map(StoreMenusResponseDto::new);
+        List<StoreMenusResponseDto> filteredMenuResponseDtoList = storeMenuPage.stream()
+                .filter(menu -> {
+                    if (!SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication().isAuthenticated()
+                            || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER"))) {
+                        return !menu.getOutOfStock();
+                    }
+                    return true;
+                })
+                .map(StoreMenusResponseDto::new)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(filteredMenuResponseDtoList, pageable, storeMenuPage.getTotalElements());
     }
 
     @Transactional
@@ -199,10 +232,48 @@ public class StoreService {
                     if (menuUpdateRequestDto.getDescription() != null) {
                         menu.setDescription(menuUpdateRequestDto.getDescription());
                     }
+                    // requestBody에 stock 필드가 없으면 수정하지 않습니다.
+                    if (menuUpdateRequestDto.getStock() != null) {
+                        menu.setStock(menuUpdateRequestDto.getStock());
+                        if (menuUpdateRequestDto.getStock().equals(0)) {
+                            menu.setOutOfStock(true);
+                        } else {
+                            menu.setOutOfStock(false);
+                        }
+                    }
                     menu.setUpdatedBy(userDetails.getUsername());
                     menuRepository.save(menu);
                 });
-
     }
 
+    @Transactional
+    public void deleteStoreMenus(String storeName, MenuDeleteRequestDto menuDeleteRequestDto, CustomUserDetails userDetails) {
+        Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+        if (storeOptional.isEmpty()) {
+            throw new NoSuchElementException("해당 가게 없음.");
+        }
+
+        Store store = storeOptional.get();
+
+        // 권한이 OWNER일 경우 자신의 store의 menu만 삭제할 수 있도록 제한합니다.
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_OWNER"))) {
+            if (!store.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new StoreOwnerNonMatchedException("자기 자신의 Store의 Menu만 삭제할 수 있습니다.");
+            }
+        }
+
+        menuDeleteRequestDto.getMenuIds().stream()
+                .filter(menuId -> {
+                    // 삭제하려는 메뉴가 해당 store에 존재하지 않으면 삭제하지 않고 다음 단계로 건너뜁니다.
+                    Optional<Menu> menuNameOptional = menuRepository.findByMenuIdAndStoreId(menuId, store.getStoreId());
+                    return menuNameOptional.isPresent();
+                })
+                .forEach(menuId -> {
+                    Menu menu = menuRepository.findById(menuId).get();
+                    menu.setDeletedAt(LocalDateTime.now());
+                    menu.setDeletedBy(userDetails.getUsername());
+                    menu.setUpdatedBy(userDetails.getUsername());
+                    menuRepository.save(menu);
+                });
+    }
 }
