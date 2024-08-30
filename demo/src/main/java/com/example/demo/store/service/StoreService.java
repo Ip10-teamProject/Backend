@@ -171,14 +171,21 @@ public class StoreService {
     }
 
     @Transactional
-    public Page<StoreMenusResponseDto> getMenus(String storeName, CustomUserDetails userDetails, Pageable pageable) {
+    public Page<StoreMenusResponseDto> getMenus(String storeName, String menuName, CustomUserDetails userDetails, Pageable pageable) {
         Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
         if (storeOptional.isEmpty()) {
             throw new NoSuchElementException("해당 가게 없음.");
         }
 
         UUID storeId = storeOptional.get().getStoreId();
-        Page<Menu> storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
+
+        Page<Menu> storeMenuPage = null;
+        if (menuName == null || menuName.equals("")) {
+            storeMenuPage = menuRepository.findByStoreId(storeId, pageable);
+        } else {
+            storeMenuPage = menuRepository.findByMenuNameAndStoreIdPageable(menuName, storeId, pageable);
+        }
+
         List<StoreMenusResponseDto> filteredMenuResponseDtoList = storeMenuPage.stream()
                 .filter(menu -> {
                     if (!SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication().isAuthenticated()
