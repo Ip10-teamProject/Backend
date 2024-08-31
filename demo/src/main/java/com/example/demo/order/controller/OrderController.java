@@ -8,6 +8,7 @@ import com.example.demo.order.service.OrderService;
 import com.example.demo.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +70,10 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public OrderResDto update(@PathVariable UUID orderId, @RequestBody OrderUpdateReqDto orderUpdateReqDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return orderService.update(orderId, orderUpdateReqDto, userDetails);
+    public ResponseEntity<String> update(@PathVariable(name = "orderId") UUID orderId, @RequestBody OrderReqDto orderReqDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        orderService.cancel(orderId, userDetails);
+        orderService.create(orderReqDto, userDetails);
+        return ResponseEntity.ok("주문 수정 완료");
     }
 
     @PutMapping("/{orderId}/cancel")
