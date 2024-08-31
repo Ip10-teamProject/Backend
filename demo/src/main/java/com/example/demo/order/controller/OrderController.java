@@ -49,7 +49,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public OrderResDto getOne(@PathVariable UUID orderId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public OrderResDto getOne(@PathVariable(name = "orderId") UUID orderId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return orderService.getOne(orderId, userDetails);
     }
 

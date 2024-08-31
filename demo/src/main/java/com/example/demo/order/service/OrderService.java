@@ -253,7 +253,7 @@ public class OrderService {
     }
 
     private void checkMine(User user, Order order) {
-        if (order.getUser() != user) {
+        if (!order.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("내 주문이 아닙니다.");
         }
     }
