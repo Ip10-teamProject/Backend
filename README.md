@@ -1,4 +1,6 @@
 # Backend
+GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 작성을 도와주는 온라인 음식 주문 관리 플랫폼
+<br/>
 
 ## Summary
 > - 애플리케이션 이름: Backend
@@ -10,7 +12,40 @@
 > - 협업 도구: GitHub
 > - 배포 환경: AWS
 > - 자바 버전: 17
-> - 기술 스택: Spring Boot 3.2.2, Spring Data JPA, Spring Security 6, Redis
+
+<br/>
+
+## Team Members and Roles 
+- 김정수
+    - 주문 API
+    - 결제 API
+- 박영무
+    - 인증 및 인가
+    - 메뉴 API
+- 서병준
+    - 사용자API
+    - AI API
+- 이경식
+    - 가게 API
+    - 카테고리 AP
+- 공통
+    - 배포
+
+<br/>
+
+## 🛠️ Backend Tech Stack
+<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=Java&logoColor=white"> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=for-the-badge&logo=AmazonEC2&logoColor=white">
+<img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white">
+<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
+<img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white">
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+<br>
 
 <br/>
 
@@ -40,6 +75,8 @@
 ### - PostgreSQL
 > - 개발 단계: Local DB
 > - 배포 단계: AWS RDS
+### - Redis
+> - 로그인 및 로그아웃 시 Caching 구현을 위한 Redis 사용
 
 ### - ER Diagram
 > ![](10조erd.png)
