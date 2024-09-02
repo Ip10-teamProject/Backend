@@ -1,8 +1,10 @@
 package com.example.demo.users.service;
 
+import com.example.demo.security.JwtRequestFilter;
 import com.example.demo.users.domain.User;
 import com.example.demo.users.domain.UserRepository;
 import com.example.demo.users.domain.UserRoleEnum;
+import com.example.demo.users.dto.CacheDto;
 import com.example.demo.users.dto.LoginRequestDto;
 import com.example.demo.users.dto.SignupRequestDto;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +13,10 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -27,6 +33,10 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtRequestFilter jwtRequestFilter;
+
+  private final RedisTemplate<String, String> redisTemplate;
+  private static final String TOKEN_BLACKLIST_PREFIX = "blacklist:";
 
   // Token 식별자
   public static final String BEARER_PREFIX = "Bearer ";
@@ -87,7 +97,8 @@ public class AuthService {
   }
 
   // 사용자 로그인 확인 및 토큰 생성
-  public String login(LoginRequestDto requestDto) {
+  @CachePut(cacheNames = "userCache", key = "#requestDto.username")
+  public CacheDto login(LoginRequestDto requestDto) {
     // 사용자 로그인 확인
     String username = requestDto.getUsername();
     String password = requestDto.getPassword();
@@ -101,9 +112,49 @@ public class AuthService {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
     }
 
-    // 확인된 사용자 토큰 생성 및 반환
-    return createToken(checkUser);
+    // 확인된 사용자 토큰 생성
+    String token = createToken(checkUser);
 
+    // 로그인한 정보를 바탕으로 Redis에 캐싱
+    return new CacheDto(
+            checkUser.getUsername(),
+            String.valueOf(checkUser.getRole()),
+            token
+    );
+  }
+
+  // 로그아웃, 토큰 blacklist 등록
+  public void logout(LoginRequestDto requestDto, String token) {
+    // 사용자 로그인 확인
+    String username = requestDto.getUsername();
+    String password = requestDto.getPassword();
+
+    // 사용자 조회
+    User checkUser = userRepository.findByUsername(username).orElseThrow(() ->
+            new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+
+    // 비밀번호 검증
+    if (!passwordEncoder.matches(password, checkUser.getPassword())) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+    }
+
+    // 토큰 검증 -> false 반환시 유효하지 않은 토큰
+    if(!jwtRequestFilter.validateToken(token, checkUser.getId())){
+      throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
+    }
+    AddBlacklist(token);
+  }
+
+  // 블랙리스트에 토큰 추가
+  public void AddBlacklist(String token){
+    redisTemplate.opsForValue().set(TOKEN_BLACKLIST_PREFIX + token, "true");
+    // 1시간 동안 블랙 리스트에서 해당 토큰을 관리
+    redisTemplate.expire(TOKEN_BLACKLIST_PREFIX + token, 1, TimeUnit.HOURS);
+  }
+
+  // 토큰 블랙리스트 검증
+  public boolean isTokenBlacklisted(String token) {
+    return jwtRequestFilter.isTokenBlacklisted(token);
   }
 
   // 토큰 생성

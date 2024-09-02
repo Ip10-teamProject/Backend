@@ -68,13 +68,13 @@ public class MasterService {
             new IllegalArgumentException("존재하지 않는 사용자 입니다."));
 
     user.setUpdateRole(false); // 승인 및 거절 당한 CUSTOMER의 updateRole은 다시 false로 돌려준다.
-    if (!updateRole.isUpdateRole()) {
-      userRepository.save(user); // 업데이트된 정보를 저장
-      return ResponseEntity.ok("사용자 권한 변경 신청 거절");
-    } else {
+    if (updateRole.isUpdateRole()) {
       user.setRole(UserRoleEnum.OWNER);
       userRepository.save(user); // 업데이트된 정보를 저장
       return ResponseEntity.ok("사용자 권한 변경 신청 승인");
+    } else {
+      userRepository.save(user); // 업데이트된 정보를 저장
+      return ResponseEntity.ok("사용자 권한 변경 신청 거절");
     }
   }
 
