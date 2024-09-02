@@ -51,7 +51,8 @@ public class OrderService {
                     menuIdList.add(orderMenuCreateRequestDto.getMenuId());
                 });
         List<Menu> menus = getMenusInStore(store, menuIdList);
-        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, menus, OrderType.ONLINE));
+        Integer price = menus.stream().map(Menu::getPrice).reduce(0, Integer::sum);
+        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, OrderType.ONLINE, price));
 
         List<Integer> amountList = new ArrayList<>();
 
@@ -67,11 +68,11 @@ public class OrderService {
             if (menu.getOutOfStock()) {
                 throw new IllegalArgumentException("품절된 메뉴가 있습니다.");
             }
+            menu.checkStock(amount);
             orderMenuRepository.save(new OrderMenu(order, menu, amount));
-            menu.minusStock();
         }
 
-        return "생성완료";
+        return "주문 완료";
     }
 
     @Transactional
@@ -90,7 +91,8 @@ public class OrderService {
                 });
 
         List<Menu> menus = getMenusInStore(store, menuIdList);
-        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, menus, OrderType.OFFLINE));
+        Integer price = menus.stream().map(Menu::getPrice).reduce(0, Integer::sum);
+        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, OrderType.OFFLINE, price));
 
         for (Menu menu: menus) {
             if (menu.getOutOfStock()) {
