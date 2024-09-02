@@ -53,11 +53,21 @@ public class OrderService {
         List<Menu> menus = getMenusInStore(store, menuIdList);
         Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, menus, OrderType.ONLINE));
 
-        for (Menu menu : menus) {
+        List<Integer> amountList = new ArrayList<>();
+
+        orderReqDto.getOrderMenuCreateRequestDtos()
+                .forEach(orderMenuCreateRequestDto -> {
+                    Integer amount = orderMenuCreateRequestDto.getAmount();
+                    amountList.add(amount);
+                });
+
+        for (int i = 0; i < menus.size(); i++) {
+            Menu menu = menus.get(i);
+            Integer amount = amountList.get(i);
             if (menu.getOutOfStock()) {
                 throw new IllegalArgumentException("품절된 메뉴가 있습니다.");
             }
-            orderMenuRepository.save(new OrderMenu(order, menu));
+            orderMenuRepository.save(new OrderMenu(order, menu, amount));
             menu.minusStock();
         }
 
@@ -82,7 +92,7 @@ public class OrderService {
         List<Menu> menus = getMenusInStore(store, menuIdList);
         Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, menus, OrderType.OFFLINE));
 
-        for (Menu menu : menus) {
+        for (Menu menu: menus) {
             if (menu.getOutOfStock()) {
                 throw new IllegalArgumentException("품절된 메뉴가 있습니다.");
             }
@@ -196,6 +206,16 @@ public class OrderService {
     public String cancel(UUID orderId, CustomUserDetails userDetails) {
         Order order = existOrder(orderId);
         checkMine(userDetails.getUser(), order);
+
+        order.getOrderMenus()
+                .forEach(orderMenu -> {
+                    Integer amount = orderMenu.getAmount();
+                    Integer stock = orderMenu.getMenu().getStock();
+                    orderMenu.getMenu().setStock(stock + amount);
+                    if (orderMenu.getMenu().getOutOfStock().equals(true)) {
+                        orderMenu.getMenu().setOutOfStock(false);
+                    }
+                });
 
         order.cancel();
 

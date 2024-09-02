@@ -70,7 +70,9 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<String> update(@PathVariable(name = "orderId") UUID orderId, @RequestBody OrderReqDto orderReqDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<String> update(@PathVariable(name = "orderId") UUID orderId,
+                                         @RequestBody OrderReqDto orderReqDto,
+                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
         orderService.cancel(orderId, userDetails);
         orderService.create(orderReqDto, userDetails);
         return ResponseEntity.ok("주문 수정 완료");
