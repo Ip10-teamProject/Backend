@@ -53,11 +53,11 @@ public class Order extends TimeStamped {
     @OneToMany(mappedBy = "order")
     private List<OrderMenu> orderMenus;
 
-    public Order(OrderReqDto orderReqDto, User user, Store store, List<Menu> menus, OrderType orderType) {
+    public Order(OrderReqDto orderReqDto, User user, Store store, OrderType orderType, Integer price) {
         this.user = user;
         this.store = store;
         this.memo = orderReqDto.getMemo();
-        this.price = menus.stream().map(Menu::getPrice).reduce(0, Integer::sum);
+        this.price = price;
         this.address = orderReqDto.getAddress();
         this.type = orderType;
     }

@@ -59,4 +59,17 @@ public class Menu extends TimeStamped implements Serializable {
         }
     }
 
+    public void checkStock(Integer amount) {
+        int remainStock = this.stock-amount;
+        if(remainStock <0){
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+
+        this.stock = remainStock;
+
+        if(remainStock == 0){
+            this.outOfStock = true;
+        }
+    }
+
 }
