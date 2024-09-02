@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,23 +52,26 @@ public class OrderService {
                     menuIdList.add(orderMenuCreateRequestDto.getMenuId());
                 });
         List<Menu> menus = getMenusInStore(store, menuIdList);
-        Integer price = menus.stream().map(Menu::getPrice).reduce(0, Integer::sum);
-        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, OrderType.ONLINE, price));
+
 
         List<Integer> amountList = new ArrayList<>();
+        AtomicReference<Integer> price = new AtomicReference<>(0);
 
         orderReqDto.getOrderMenuCreateRequestDtos()
                 .forEach(orderMenuCreateRequestDto -> {
+                    Menu menu = this.menuRepository.findById(orderMenuCreateRequestDto.getMenuId()).orElseThrow(
+                        () -> new IllegalArgumentException("메뉴가 존재하지 않습니다.")
+                    );
                     Integer amount = orderMenuCreateRequestDto.getAmount();
+                    price.set(price.get() + (amount * menu.getPrice()));
                     amountList.add(amount);
                 });
+
+        Order order = orderRepository.save(new Order(orderReqDto, userDetails.getUser(), store, OrderType.ONLINE, price.get()));
 
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
             Integer amount = amountList.get(i);
-            if (menu.getOutOfStock()) {
-                throw new IllegalArgumentException("품절된 메뉴가 있습니다.");
-            }
             menu.checkStock(amount);
             orderMenuRepository.save(new OrderMenu(order, menu, amount));
         }
