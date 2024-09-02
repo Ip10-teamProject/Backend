@@ -15,9 +15,7 @@
 <br/>
 
 ## Infrastructure Architecture
-> - Spring Boot로 개발, Spring Security와 JWT를 이용하여 인증 및 인가 처리
-> - DBMS는 postgreSQL을 사용, ORM은 JPA를 사용
-> - AWS EC2 instance에 배포
+### - 
 > <div><img src="https://velog.velcdn.com/images/dmitry__777/post/3f5aca01-2624-4fe6-9a70-80696581ab8c/image.png" align="center" width="70%"></img></div>
 
 <br/>
