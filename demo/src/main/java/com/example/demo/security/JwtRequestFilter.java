@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,10 +29,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final SecretKey secretKey;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public JwtRequestFilter(CustomUserDetailsService customUserDetailsService, @Value("${jwt.secret.key}") String secretKey) {
+    public JwtRequestFilter(CustomUserDetailsService customUserDetailsService,
+                            @Value("${jwt.secret.key}") String secretKey,
+                            RedisTemplate<String, String> redisTemplate) {
         this.customUserDetailsService = customUserDetailsService;
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -68,8 +73,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
-
-
     /**
      *  ("Bearer "을 제거한) JWT accessToken으로부터 user_id를 추출
      */
@@ -97,7 +100,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      *  ("Bearer "을 제거한) JWT accessToken으로부터 user_id를 추출하고 api/users/{id}의 id 값과 비교하여 토큰의 유효성을 검증
      */
-    private boolean validateToken(String token, Long id) {
+    public boolean validateToken(String token, Long id) {
         Long userId = extractUserId(token);
         return userId.equals(id) && !isTokenExpired(token);
     }
@@ -113,5 +116,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // 블랙리스트 확인 메서드
+    public boolean isTokenBlacklisted(String token) {
+        return redisTemplate.hasKey("blacklist:" + token);
     }
 }
