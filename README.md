@@ -14,26 +14,11 @@
 
 <br/>
 
-## 🛠 Backend Tech Stack
-
-<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
-<br>
-<img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=Java&logoColor=white"> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
-<br>
-<img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=for-the-badge&logo=AmazonEC2&logoColor=white">
-<img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white">
-<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-<img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white">
-<br>
-<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white">
-<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-<br>
-
-<br/>
-
 ## Infrastructure Architecture
-### - 
-> <div><img src="10조infra.png" align="center" width="50%"></img></div>
+> - Spring Boot로 개발, Spring Security와 JWT를 이용하여 인증 및 인가 처리
+> - DBMS는 postgreSQL을 사용, ORM은 JPA를 사용
+> - AWS EC2 instance에 배포
+> <div><img src="https://velog.velcdn.com/images/dmitry__777/post/3f5aca01-2624-4fe6-9a70-80696581ab8c/image.png" align="center" width="70%"></img></div>
 
 <br/>
 
