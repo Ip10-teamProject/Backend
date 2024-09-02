@@ -57,7 +57,7 @@
 > - 배포 단계: AWS RDS
 
 ### - ER Diagram
-> ![](10조erd.png)
+> ![](erdImg.png)
 
 <br/>
 
