@@ -40,7 +40,7 @@
 > - 배포 단계: AWS RDS
 
 ### - ER Diagram
-> ![](https://velog.velcdn.com/images/dmitry__777/post/2474444c-57a5-4f1a-90b0-08bf5651a1cd/image.png)
+> ![](10조erd.png)
 
 <br/>
 
