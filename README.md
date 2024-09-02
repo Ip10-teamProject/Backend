@@ -32,8 +32,8 @@
 <br/>
 
 ## Infrastructure Architecture
-### - 
-> ![](10조infra.png)
+### -
+> <div><img src="10조infra.png" align="center" width="70%"></img></div>
 
 <br/>
 
