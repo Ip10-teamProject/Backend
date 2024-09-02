@@ -1,4 +1,6 @@
 # Backend
+GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 작성을 도와주는 온라인 음식 주문 관리 플랫폼
+<br/>
 
 ## Summary
 > - 애플리케이션 이름: Backend
@@ -10,12 +12,28 @@
 > - 협업 도구: GitHub
 > - 배포 환경: AWS
 > - 자바 버전: 17
-> - 기술 스택: Spring Boot 3.2.2, Spring Data JPA, Spring Security 6, Redis
 
 <br/>
 
-## 🛠 Backend Tech Stack
+## Team Members and Roles 
+- 김정수
+    - 주문 API
+    - 결제 API
+- 박영무
+    - 인증 및 인가
+    - 메뉴 API
+- 서병준
+    - 사용자API
+    - AI API
+- 이경식
+    - 가게 API
+    - 카테고리 AP
+- 공통
+    - 배포
 
+<br/>
+
+## 🛠️ Backend Tech Stack
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
 <br>
 <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=Java&logoColor=white"> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
@@ -32,8 +50,11 @@
 <br/>
 
 ## Infrastructure Architecture
-### -
-> <div><img src="10조infra.png" align="center" width="70%"></img></div>
+> - Spring Boot로 개발, Spring Security와 JWT를 이용하여 인증 및 인가 처리
+> - DBMS는 postgreSQL을 사용, ORM은 JPA를 사용
+> - AWS EC2 instance에 배포
+> <div><img src="10조infra.png" align="center" width="70%"></img></div> 
+
 
 <br/>
 
@@ -55,6 +76,8 @@
 ### - PostgreSQL
 > - 개발 단계: Local DB
 > - 배포 단계: AWS RDS
+### - Redis
+> - 로그인 및 로그아웃 시 Caching 구현을 위한 Redis 사용
 
 ### - ER Diagram
 > ![](10조erd.png)
