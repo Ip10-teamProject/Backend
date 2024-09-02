@@ -33,7 +33,7 @@
 
 ## Infrastructure Architecture
 ### - 
-> <div><img src="https://velog.velcdn.com/images/dmitry__777/post/3f5aca01-2624-4fe6-9a70-80696581ab8c/image.png" align="center" width="70%"></img></div>
+> ![](10조infra.png)
 
 <br/>
 
