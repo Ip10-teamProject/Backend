@@ -1,5 +1,6 @@
 # Backend
-GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 작성을 도와주는 온라인 음식 주문 관리 플랫폼
+> - GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 작성을 도와주는 온라인 음식 주문 관리 플랫폼
+
 <br/>
 
 ## Summary
@@ -90,7 +91,7 @@ GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 
 > - UsernamePasswordAuthenticationFilter의 앞에 JwtRequestFilter 커스텀 필터를 추가
 > - 클라이언트에서 로그인 요청 시 JwtRequestFilter를 통과하여 CustomUserDetails 객체를 추가
 ### - JWT
-> - 서버 측에서는 Authorization 요청 헤더에 있는 access token 값에서 있는 유저의 정보를 추출
+> - 서버 측에서는 Authorization 요청 헤더에 있는 access token 값에 있는 유저의 정보를 추출
 > - CustomUserDetails 객체와 access token에서 추출한 유저의 정보를 비교하여 인증 및 인가를 처리
 
 <br/>
@@ -99,6 +100,6 @@ GEMINI API를 기반으로 가게 사장님들의 가게 메뉴를 추천받고 
 ### - AWS
 > - Root 계정에서 EC2 및 RDS instance를 생성
 ### - FTP
-> - FileZilla를 사용하여 .jar 파일을 업로드
+> - FileZilla를 사용하여 EC2 instance에 .jar 파일을 업로드
 ### - SSH
 > - EC2 instance에 로그인하여 .jar 파일을 실행
